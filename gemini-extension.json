@@ -1,0 +1,6 @@
+{
+  "name": "claudecode",
+  "description": "Configure Claude Code itself — prompt-cache TTL and the bundled status line",
+  "version": "0.1.0",
+  "contextFileName": "GEMINI.md"
+}

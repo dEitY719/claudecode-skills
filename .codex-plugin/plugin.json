@@ -1,0 +1,41 @@
+{
+  "name": "claudecode",
+  "version": "0.1.0",
+  "description": "Configure Claude Code itself: flip the prompt-cache TTL between 5 minutes and 1 hour, and install the bundled status line.",
+  "author": {
+    "name": "dEitY719",
+    "url": "https://github.com/dEitY719"
+  },
+  "homepage": "https://github.com/dEitY719/claudecode-skills",
+  "repository": "https://github.com/dEitY719/claudecode-skills",
+  "license": "MIT",
+  "keywords": [
+    "skills",
+    "plugin",
+    "marketplace",
+    "claude-code",
+    "settings",
+    "statusline",
+    "prompt-caching"
+  ],
+  "skills": "./skills/",
+  "hooks": {},
+  "interface": {
+    "displayName": "Claude Code Config",
+    "shortDescription": "Prompt-cache TTL and status line for Claude Code",
+    "longDescription": "Two skills that configure Claude Code itself by patching settings.json. cache-ttl flips env.ENABLE_PROMPT_CACHING_1H so the prompt cache lives one hour instead of five minutes, and removes the key to go back. statusline-setup copies a bundled statusline-command.sh and statusline-tokens.sh into the Claude config directory and points the statusLine block at the installed path. Both target ${CLAUDE_CONFIG_DIR:-$HOME/.claude} so multi-account setups work, both merge with jq through a temp file so no unrelated key is ever lost, and both refuse to touch invalid JSON rather than guessing. Every file they need ships inside the plugin: no dotfiles checkout, no network.",
+    "developerName": "dEitY719",
+    "category": "Developer Tools",
+    "capabilities": [
+      "Read",
+      "Write"
+    ],
+    "defaultPrompt": [
+      "Set my prompt cache TTL to 1 hour.",
+      "Install the status line for Claude Code."
+    ],
+    "websiteURL": "https://github.com/dEitY719/claudecode-skills",
+    "brandColor": "#2563EB",
+    "screenshots": []
+  }
+}

@@ -1,0 +1,21 @@
+{
+  "name": "claudecode",
+  "description": "Configure Claude Code itself: flip the prompt-cache TTL between 5 minutes and 1 hour, and install the bundled status line. Both patch settings.json losslessly and need no dotfiles checkout",
+  "version": "0.1.0",
+  "author": {
+    "name": "dEitY719",
+    "url": "https://github.com/dEitY719"
+  },
+  "homepage": "https://github.com/dEitY719/claudecode-skills",
+  "repository": "https://github.com/dEitY719/claudecode-skills",
+  "license": "MIT",
+  "keywords": [
+    "skills",
+    "plugin",
+    "marketplace",
+    "claude-code",
+    "settings",
+    "statusline",
+    "prompt-caching"
+  ]
+}

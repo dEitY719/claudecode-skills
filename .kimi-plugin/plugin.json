@@ -1,0 +1,33 @@
+{
+  "name": "claudecode",
+  "version": "0.1.0",
+  "description": "Configure Claude Code itself: prompt-cache TTL and the bundled status line.",
+  "author": {
+    "name": "dEitY719",
+    "url": "https://github.com/dEitY719"
+  },
+  "homepage": "https://github.com/dEitY719/claudecode-skills",
+  "license": "MIT",
+  "keywords": [
+    "skills",
+    "plugin",
+    "marketplace",
+    "claude-code",
+    "settings",
+    "statusline",
+    "prompt-caching"
+  ],
+  "skills": "./skills/",
+  "skillInstructions": "Kimi Code tool mapping for the claudecode skills.\n\nThe authoritative mapping is owned by the sibling repo dEitY719/harness-skills at `references/kimi-tools.md` (dotfiles #1410 F-5). Read it there when a skill names a tool you do not recognise; this repo deliberately keeps no copy. Summary:\n\n- Both skills are thin wrappers over one bundled shell script each. \"Run a shell command\" -> `Bash`. Run the script; do not re-implement its jq in the transcript.\n- Read / Grep / Glob keep their exposed Kimi names. `Write` and `Edit` are not needed by either skill and must not be used against settings.json.\n- \"Ask the user\" -> `AskUserQuestion`. `claudecode:cache-ttl` asks when the requested mode is neither 1h nor 5m; do not guess a default.\n- Neither skill targets a hard-coded path. They write to ${CLAUDE_CONFIG_DIR:-$HOME/.claude}; export CLAUDE_CONFIG_DIR first to configure a non-default account.\n- A non-zero exit is a stop, not a prompt to improvise. Exit 3 means jq is missing and exit 4 means settings.json is invalid JSON (a .bak was saved). Never fall back to sed, python, or a hand-written JSON rewrite.",
+  "interface": {
+    "displayName": "Claude Code Config",
+    "shortDescription": "Prompt-cache TTL and status line for Claude Code",
+    "longDescription": "Two skills that patch Claude Code's settings.json: cache-ttl flips the prompt-cache TTL between 5 minutes and 1 hour, and statusline-setup installs the bundled status line scripts.",
+    "developerName": "dEitY719",
+    "capabilities": [
+      "Read",
+      "Write"
+    ],
+    "websiteURL": "https://github.com/dEitY719/claudecode-skills"
+  }
+}

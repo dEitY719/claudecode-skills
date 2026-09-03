@@ -1,0 +1,118 @@
+<!DOCTYPE html>
+<html lang="ko" class="theme-dark">
+<head>
+  <meta charset="UTF-8">
+  <meta name="viewport" content="width=device-width, initial-scale=1.0">
+  <title>claudecode skills</title>
+  <style>
+    *, *::before, *::after { box-sizing: border-box; margin: 0; padding: 0; }
+    html.theme-dark {
+      --bg: #0A0A0A; --surface: #141414; --border: rgba(255,255,255,0.07);
+      --text: #EDEDED; --text-secondary: #8b8b8b; --accent: #3b82f6;
+      --warning: #f59e0b; --code-bg: #101010;
+    }
+    html.theme-light {
+      --bg: #FAFAF9; --surface: #FFFFFF; --border: rgba(0,0,0,0.08);
+      --text: #0f172a; --text-secondary: #64748b; --accent: #2563eb;
+      --warning: #d97706; --code-bg: #f4f4f5;
+    }
+    body {
+      font-family: -apple-system, BlinkMacSystemFont, 'Segoe UI', Roboto, 'Noto Sans KR', sans-serif;
+      background: var(--bg); color: var(--text);
+      line-height: 1.65; -webkit-font-smoothing: antialiased; letter-spacing: -0.01em;
+    }
+    h1, h2, h3 { color: var(--text); letter-spacing: -0.03em; line-height: 1.2; }
+    code { font-family: ui-monospace, SFMono-Regular, Menlo, Consolas, monospace;
+           background: var(--code-bg); border: 1px solid var(--border);
+           border-radius: 4px; padding: 1px 5px; font-size: 0.86em; }
+    .wrap { max-width: 820px; margin: 0 auto; padding: 64px 24px 96px; }
+    .eyebrow { display: inline-block; font-size: 12px; font-weight: 600;
+               letter-spacing: 0.12em; text-transform: uppercase;
+               color: var(--text-secondary); border: 1px solid var(--border);
+               background: var(--surface); border-radius: 999px; padding: 6px 14px; }
+    header.page { border-bottom: 1px solid var(--border); padding-bottom: 36px; margin-bottom: 36px; }
+    header.page h1 { font-size: clamp(30px, 6vw, 44px); margin: 20px 0 12px; }
+    header.page .lede { font-size: 17px; color: var(--text-secondary); max-width: 64ch; }
+    .warn { border: 1px solid var(--warning); border-left-width: 3px;
+            background: var(--surface); border-radius: 0 10px 10px 0;
+            padding: 16px 20px; margin: 28px 0 0; font-size: 14.5px;
+            color: var(--text-secondary); }
+    .warn strong { color: var(--text); }
+    section { margin-top: 44px; }
+    section > h2 { font-size: 21px; margin-bottom: 16px; }
+    section p { color: var(--text-secondary); font-size: 15px; margin-bottom: 14px; max-width: 74ch; }
+    .grid { display: grid; grid-template-columns: repeat(auto-fit, minmax(300px, 1fr)); gap: 14px; }
+    .card { background: var(--surface); border: 1px solid var(--border);
+            border-radius: 10px; padding: 18px 20px; }
+    .card h3 { font-size: 15px; margin-bottom: 7px; }
+    .card code.inv { display: block; font-size: 12.5px; color: var(--text-secondary);
+                     margin: 2px 0 9px; background: none; border: none; padding: 0; }
+    .card p { font-size: 14.5px; margin: 0; }
+    .card .links { margin-top: 12px; padding-top: 12px; border-top: 1px solid var(--border); }
+    .card .links a { font-size: 13.5px; font-weight: 600; color: var(--accent); text-decoration: none; }
+    .card .links a:hover { text-decoration: underline; }
+    footer.site { margin-top: 52px; padding-top: 20px; border-top: 1px solid var(--border);
+                  font-size: 13.5px; color: var(--text-secondary); }
+    footer.site a { color: var(--accent); text-decoration: none; }
+    footer.site a:hover { text-decoration: underline; }
+  </style>
+</head>
+<body>
+  <main class="wrap">
+    <header class="page">
+      <span class="eyebrow">claudecode plugin &middot; skill docs</span>
+      <h1>claudecode skills</h1>
+      <p class="lede">Claude Code <strong>자기 자신</strong>을 설정하는 스킬 2개 &mdash; 프롬프트 캐시 TTL 과 상태줄. 둘 다 <code>settings.json</code> 의 키 하나씩만 건드리고 나머지는 전부 보존합니다.</p>
+      <div class="warn">
+        <strong>dotfiles 없이 동작합니다.</strong> 필요한 셸 스크립트와 상태줄 asset 이 전부 플러그인 안에 들어 있어, <code>dEitY719/dotfiles</code> 를 한 번도 클론하지 않은 PC 에서도 같은 결과가 나옵니다 (#1751 NF-1). <code>jq</code> 는 필수이며, 없으면 <code>sed</code> 로 우회하지 않고 그냥 멈춥니다.
+      </div>
+    </header>
+
+    <section>
+      <h2>스킬 2개</h2>
+      <div class="grid">
+        <article class="card">
+          <h3>cache-ttl</h3>
+          <code class="inv">/claudecode:cache-ttl [1h|5m]</code>
+          <p><code>env.ENABLE_PROMPT_CACHING_1H</code> 를 뒤집어 프롬프트 캐시 수명을 1시간으로 늘리거나 기본 5분으로 되돌립니다. <code>5m</code> 은 키를 지우고, 그 결과 <code>.env</code> 가 비면 <code>.env</code> 까지 제거합니다.</p>
+          <div class="links"><a href="skill-guides/cache-ttl.md">설명서</a></div>
+        </article>
+        <article class="card">
+          <h3>statusline-setup</h3>
+          <code class="inv">/claudecode:statusline-setup [--dry-run]</code>
+          <p>번들된 <code>statusline-command.sh</code> 와 <code>statusline-tokens.sh</code> 를 Claude 설정 디렉터리에 설치하고 <code>.statusLine</code> 을 그 절대 경로로 설정합니다. 기존 파일이 다르면 <code>.bak</code> 부터 남깁니다. bash 4.4+ 필요.</p>
+          <div class="links"><a href="skill-guides/statusline-setup.md">설명서</a></div>
+        </article>
+      </div>
+    </section>
+
+    <section>
+      <h2>공통 안전 계약</h2>
+      <p>두 스크립트는 가장자리에서 똑같이 동작하고, <code>tests/run.sh</code> 가 그것을 강제합니다.</p>
+      <div class="grid">
+        <article class="card">
+          <h3>jq 아니면 중단</h3>
+          <p><code>jq</code> 가 없으면 설치 안내를 출력하고 exit 3. <code>sed</code> 나 <code>python</code> 폴백은 없습니다 &mdash; 어중간하게 파싱한 JSON 편집은 거절보다 나쁩니다.</p>
+        </article>
+        <article class="card">
+          <h3>깨진 JSON 은 덮어쓰지 않음</h3>
+          <p><code>jq -e .</code> 를 통과하지 못하는 <code>settings.json</code> 은 <code>.bak</code> 으로 복사만 하고 exit 4. 아무것도 쓰지 않습니다.</p>
+        </article>
+        <article class="card">
+          <h3>손실 없는 병합</h3>
+          <p><code>hooks</code> &middot; <code>model</code> &middot; <code>permissions</code> 등 무관한 키는 전부 살아남습니다. 임시 파일에 쓴 뒤 <code>mv</code> 하므로 <code>jq</code> 실패가 원본을 자르지 못합니다.</p>
+        </article>
+        <article class="card">
+          <h3>멀티 계정</h3>
+          <p>대상은 <code>${CLAUDE_CONFIG_DIR:-$HOME/.claude}</code>. 호출 전에 그 변수를 지정하면 계정별로 따로 설정됩니다 (#1751 F-5).</p>
+        </article>
+      </div>
+    </section>
+
+    <footer class="site">
+      소스: <a href="https://github.com/dEitY719/claudecode-skills">dEitY719/claudecode-skills</a> &middot;
+      설명서는 <code>docs/skill-guides/</code> 의 Markdown 원본입니다 (HTML 렌더본 없음).
+    </footer>
+  </main>
+</body>
+</html>

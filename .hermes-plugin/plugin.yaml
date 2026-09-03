@@ -1,0 +1,4 @@
+name: claudecode
+version: 0.1.0
+description: Skills that configure Claude Code itself — prompt-cache TTL and the bundled status line
+author: dEitY719

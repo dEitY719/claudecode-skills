@@ -1,0 +1,21 @@
+{
+  "name": "claudecode-skills",
+  "version": "0.1.0",
+  "description": "Skills that configure Claude Code itself — prompt-cache TTL and the bundled status line",
+  "type": "module",
+  "main": ".opencode/plugins/claudecode.js",
+  "license": "MIT",
+  "repository": {
+    "type": "git",
+    "url": "git+https://github.com/dEitY719/claudecode-skills.git"
+  },
+  "keywords": [
+    "skills",
+    "plugin",
+    "marketplace",
+    "claude-code",
+    "settings",
+    "statusline",
+    "prompt-caching"
+  ]
+}

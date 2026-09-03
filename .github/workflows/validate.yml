@@ -1,0 +1,29 @@
+name: validate
+
+# Validation is defined once, in `harness-skills`, and called from all the
+# split-out skill repos (dotfiles #1410 D-10). Do not re-inline the checks
+# here: a copy is a multi-way drift risk, which is exactly what NF-2 forbids.
+#
+# To change what is checked, edit
+# dEitY719/harness-skills/.github/workflows/skill-check.yml.
+
+on:
+  push:
+    branches: [main]
+  pull_request:
+  workflow_dispatch:
+
+permissions:
+  contents: read
+
+jobs:
+  validate:
+    uses: dEitY719/harness-skills/.github/workflows/skill-check.yml@main
+    with:
+      plugin-name: claudecode
+      # skills/statusline-setup/assets/ is verbatim third-party payload: a
+      # near-verbatim snapshot of dotfiles `claude/statusline-*.sh`, whose
+      # rendered status line uses emoji glyphs. Editing them to satisfy the
+      # emoji gate would break the snapshot contract. Nothing else in this
+      # repo may carry one. See CLAUDE.md -> "Emojis".
+      allow-emoji-paths: skills/statusline-setup/assets/
