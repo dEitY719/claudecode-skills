@@ -321,10 +321,10 @@ if [ "$SETUP_MODE" = "internal" ] && [ -n "${CLAUDE_STATUSLINE_USAGE_ID:-}" ] &&
     [ -n "${CLAUDE_STATUSLINE_USAGE_API:-}" ]; then
     # Bundled-copy deviation from the dotfiles original: the user id and the
     # usage-API host are read from the environment instead of being hard-coded,
-    # so this public plugin carries no organisation-internal identifier. Set
-    # both in ~/.zshrc.local (or any file your shell sources) to turn the
-    # segment on; with either unset the whole block is skipped and the status
-    # line simply renders without a cost figure.
+    # so this public plugin carries no organisation-internal identifier. The
+    # installer sets both, in settings.json's `env` block, from its --usage-id
+    # and --usage-api flags; with either unset the whole block is skipped and
+    # the status line simply renders without a cost figure.
     _USAGE_ID="${CLAUDE_STATUSLINE_USAGE_ID:-}"
     _USAGE_API="${CLAUDE_STATUSLINE_USAGE_API:-}"
     _BUDGET="${CLAUDE_STATUSLINE_BUDGET:-175}"
