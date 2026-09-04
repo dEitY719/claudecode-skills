@@ -41,12 +41,20 @@
 이미 상태줄을 쓰고 있는 사용자라면 `--dry-run` 을 먼저 돌려 보여 준 뒤
 설치합니다.
 
-## Bedrock 비용 세그먼트 설정 (사내 PC)
+## Bedrock 비용 세그먼트 설정
 
-`~/.dotfiles-setup-mode` 가 `internal` 이고 `settings.json` 에
-`env.CLAUDE_STATUSLINE_USAGE_ID` 가 아직 없을 때만 해당합니다. 이때 스킬은
-**사용자에게 usage id 와 usage API URL 을 물어본 뒤** 그 값을 위 플래그로
-넘겨 설치합니다.
+`~/.dotfiles-setup-mode` 가 `internal` **이거나 아예 없고(비어 있고)**,
+`settings.json` 에 `env.CLAUDE_STATUSLINE_USAGE_ID` 가 아직 없을 때 해당합니다.
+이때 스킬은 **사용자에게 usage id 와 usage API URL 을 물어본 뒤** 그 값을 위
+플래그로 넘겨 설치합니다.
+
+파일이 없는 경우를 포함시킨 이유는, 그 파일이 dotfiles 산출물이기 때문입니다 —
+이 플러그인만 단독으로 설치한 동료 PC 에는 애초에 없습니다. `internal` 만
+허용하면 그런 PC 는 이유도 모른 채 세그먼트를 영원히 못 켭니다. 실제 잠금장치는
+두 환경변수 쪽입니다: 설치 시 `--usage-id` / `--usage-api` 를 명시적으로 넘긴
+사람에게만 값이 생기므로, 설정하지 않은 PC 는 여전히 아무것도 그리지 않고
+네트워크 호출도 하지 않습니다. 반면 파일에 `external` 처럼 다른 값이 적혀
+있으면 "이 PC 는 대상이 아니다" 라는 명시적 선언이므로 그대로 존중합니다.
 
 스크립트는 절대 스스로 묻지 않습니다 — 비대화형으로 실행되므로 스크립트 안의
 `read` 는 그대로 멈춰 버립니다. 묻는 쪽은 하네스입니다: Claude Code 에서는

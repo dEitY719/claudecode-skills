@@ -312,12 +312,21 @@ ttl_label="5m"
 ttl_info="${CYAN}⏱️ ${ttl_label}${RESET}"
 usage_group="${usage_group:+${usage_group} }${ttl_info}"
 
-# Bedrock cost display (internal only)
+# Bedrock cost display
 SETUP_MODE=""
 [ -f "$HOME/.dotfiles-setup-mode" ] && SETUP_MODE=$(cat "$HOME/.dotfiles-setup-mode")
 
+# An empty SETUP_MODE counts as eligible, not as "not internal". The file is a
+# dotfiles artefact, so anyone who installed this plugin standalone has no such
+# file and would otherwise be locked out of the segment forever — with no error
+# to explain why. The real gate is the pair of env vars below: they are only
+# ever set by someone who deliberately ran the installer with --usage-id and
+# --usage-api, so an unconfigured machine still shows nothing and makes no
+# network call. A file that says something else ("external") is an explicit
+# statement that this is not the machine for it, and is still honoured.
 cost_info=""
-if [ "$SETUP_MODE" = "internal" ] && [ -n "${CLAUDE_STATUSLINE_USAGE_ID:-}" ] &&
+if { [ "$SETUP_MODE" = "internal" ] || [ -z "$SETUP_MODE" ]; } &&
+    [ -n "${CLAUDE_STATUSLINE_USAGE_ID:-}" ] &&
     [ -n "${CLAUDE_STATUSLINE_USAGE_API:-}" ]; then
     # Bundled-copy deviation from the dotfiles original: the user id and the
     # usage-API host are read from the environment instead of being hard-coded,

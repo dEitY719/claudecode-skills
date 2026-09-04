@@ -27,6 +27,13 @@ both from the environment instead — `CLAUDE_STATUSLINE_USAGE_ID`,
 an unconfigured install renders the status line with no cost figure and makes no
 network call.
 
+The same block's `~/.dotfiles-setup-mode` gate is widened here too: upstream
+requires the file to read `internal`, while this copy also accepts it being
+absent or empty. That file is a dotfiles artefact and a standalone install of
+this plugin has none, so the upstream form would lock every colleague out of
+the segment with no error explaining why. A file that reads something else
+(`external`) is still honoured as an explicit "not this machine".
+
 Those variables reach the script through `settings.json`'s `env` block, which
 Claude Code injects into the status line command's environment. That is why
 `install-statusline.sh` writes them there with `--usage-id` / `--usage-api` /

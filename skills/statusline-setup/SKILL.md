@@ -36,7 +36,7 @@ If the argument is `-h`, `--help`, or `help`, run
 
 ## Step 2: Ask for the Bedrock cost values, if this machine needs them
 
-Only when `~/.dotfiles-setup-mode` reads `internal` and
+Only when `~/.dotfiles-setup-mode` reads `internal` **or is absent/empty** and
 `.env.CLAUDE_STATUSLINE_USAGE_ID` is absent from
 `${CLAUDE_CONFIG_DIR:-$HOME/.claude}/settings.json`: ask the user for the usage
 id and the usage-API URL (and a budget, if not the default 175), then pass them

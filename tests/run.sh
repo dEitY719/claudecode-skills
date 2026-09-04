@@ -200,4 +200,15 @@ if [ -e "$CLAUDE_CONFIG_DIR/settings.json" ]; then fail "$t" "created settings.j
 if [ -e "$CLAUDE_CONFIG_DIR/statusline-command.sh" ]; then fail "$t" "installed a file"; fi
 pass "$t"
 
+# Regression guard on the bundled asset itself, not on the installer: a
+# re-bundle that copies upstream verbatim would silently restore the
+# `internal`-only gate and break every standalone install. The tests cannot
+# render the status line (it needs bash 4.4 and a live session JSON on stdin),
+# so they assert the guard's shape instead.
+t="asset cost gate accepts an absent ~/.dotfiles-setup-mode"
+asset="$repo/skills/statusline-setup/assets/statusline-command.sh"
+grep -q 'SETUP_MODE" = "internal" \] || \[ -z "$SETUP_MODE"' "$asset" ||
+    fail "$t" "the widened gate is gone — a re-bundle probably overwrote it"
+pass "$t"
+
 printf '\nall tests passed\n'
