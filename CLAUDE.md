@@ -57,6 +57,14 @@ network. **Re-apply this on every re-bundle**; a straight copy of upstream
 would republish those identifiers. Apart from that block, never hand-edit an
 asset.
 
+Those three variables are **not** exported from a shell rc file. Claude Code
+injects `settings.json`'s `env` block into the status line command's
+environment — the same route `cache-ttl` uses for `ENABLE_PROMPT_CACHING_1H` —
+so `install-statusline.sh` takes `--usage-id` / `--usage-api` / `--budget` and
+writes them into `env` through its lossless jq merge. The script never prompts
+for them: it runs non-interactively, so `SKILL.md` makes the *harness* ask and
+pass them as flags.
+
 The two files must stay side by side wherever they land:
 `statusline-command.sh` sources `statusline-tokens.sh` as a sibling of its own
 resolved path. It also needs **bash 4.4+** (associative arrays); that is stated

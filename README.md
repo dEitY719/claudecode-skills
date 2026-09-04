@@ -115,7 +115,7 @@ Manifests live at the repo root and all point at one flat `skills/` directory:
 .
 ├── skills/
 │   ├── cache-ttl/{SKILL.md, scripts/set-cache-ttl.sh}
-│   └── statusline-setup/{SKILL.md, scripts/install-statusline.sh, assets/}
+│   └── statusline-setup/{SKILL.md, scripts/, assets/, references/}
 ├── tests/run.sh                                    POSIX-sh, no framework
 ├── .claude-plugin/{marketplace,plugin}.json        Claude Code
 ├── .codex-plugin/plugin.json                       Codex
@@ -178,6 +178,12 @@ user id and usage-API host in its Bedrock cost segment, so the bundled copy
 reads them from `CLAUDE_STATUSLINE_USAGE_ID` / `CLAUDE_STATUSLINE_USAGE_API`
 (plus optional `CLAUDE_STATUSLINE_BUDGET`, default 175) and keeps the segment
 off unless both are set. An unconfigured install makes no network call.
+
+You do not export those by hand. Claude Code injects `settings.json`'s `env`
+block into the status line command's environment, so the skill asks for the two
+values when the machine needs them and `install-statusline.sh --usage-id ID
+--usage-api URL [--budget N]` writes them into `env` with the same lossless jq
+merge it uses for `statusLine`. An omitted flag leaves that key untouched.
 
 This repo answers dotfiles #1751. It is a sibling of `authoring-skills`,
 `harness-skills`, and the other split-out plugin repos from the #1410 migration.

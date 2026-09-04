@@ -128,4 +128,76 @@ fi
 [ -f "$CLAUDE_CONFIG_DIR/settings.json.bak" ] || fail "$t" "no .bak written"
 pass "$t"
 
+t="install-statusline --usage-id/--usage-api write both env keys"
+fresh
+sh "$statusline" --usage-id u123 --usage-api https://example.invalid/usage >/dev/null
+v=$(jq -r '[.env.CLAUDE_STATUSLINE_USAGE_ID, .env.CLAUDE_STATUSLINE_USAGE_API] | join(",")' \
+    "$CLAUDE_CONFIG_DIR/settings.json")
+[ "$v" = "u123,https://example.invalid/usage" ] || fail "$t" "got '$v'"
+pass "$t"
+
+t="install-statusline --budget writes env.CLAUDE_STATUSLINE_BUDGET"
+fresh
+sh "$statusline" --budget 250 >/dev/null
+v=$(jq -r '.env.CLAUDE_STATUSLINE_BUDGET' "$CLAUDE_CONFIG_DIR/settings.json")
+[ "$v" = "250" ] || fail "$t" "got '$v'"
+pass "$t"
+
+t="install-statusline usage flags preserve unrelated keys and a sibling env entry"
+fresh
+cat >"$CLAUDE_CONFIG_DIR/settings.json" <<'EOF'
+{"model":"opus","permissions":{"allow":["Bash"]},"hooks":{"Stop":[{"matcher":"*"}]},
+ "env":{"ENABLE_PROMPT_CACHING_1H":"1","KEEP_ME":"yes"}}
+EOF
+sh "$statusline" --usage-id u1 --usage-api https://example.invalid/u --budget 42 >/dev/null
+v=$(jq -r '[.model, .permissions.allow[0], .hooks.Stop[0].matcher,
+            .env.ENABLE_PROMPT_CACHING_1H, .env.KEEP_ME, .env.CLAUDE_STATUSLINE_BUDGET]
+           | join(",")' "$CLAUDE_CONFIG_DIR/settings.json")
+[ "$v" = "opus,Bash,*,1,yes,42" ] || fail "$t" "got '$v'"
+pass "$t"
+
+t="install-statusline leaves an existing env value untouched when the flag is omitted"
+sh "$statusline" --budget 99 >/dev/null
+v=$(jq -r '[.env.CLAUDE_STATUSLINE_USAGE_ID, .env.CLAUDE_STATUSLINE_USAGE_API,
+            .env.CLAUDE_STATUSLINE_BUDGET] | join(",")' "$CLAUDE_CONFIG_DIR/settings.json")
+[ "$v" = "u1,https://example.invalid/u,99" ] || fail "$t" "got '$v'"
+pass "$t"
+
+t="install-statusline warns but still writes when only one usage flag is given"
+fresh
+out=$(sh "$statusline" --usage-id lonely 2>&1) || fail "$t" "non-zero exit"
+case "$out" in *warning:*) ;; *) fail "$t" "no warning printed" ;; esac
+v=$(jq -r '.env.CLAUDE_STATUSLINE_USAGE_ID' "$CLAUDE_CONFIG_DIR/settings.json")
+[ "$v" = "lonely" ] || fail "$t" "value not written: '$v'"
+pass "$t"
+
+t="install-statusline does not warn when the counterpart is already in settings.json"
+out=$(sh "$statusline" --usage-api https://example.invalid/u 2>&1) || fail "$t" "non-zero exit"
+case "$out" in *warning:*) fail "$t" "warned despite a complete pair" ;; esac
+pass "$t"
+
+t="install-statusline rejects a non-integer --budget with exit 2"
+fresh
+rc=0
+sh "$statusline" --budget abc >/dev/null 2>&1 || rc=$?
+[ "$rc" = "2" ] || fail "$t" "exit was $rc, expected 2"
+if [ -e "$CLAUDE_CONFIG_DIR/settings.json" ]; then fail "$t" "wrote settings.json anyway"; fi
+pass "$t"
+
+t="install-statusline rejects a zero and a negative --budget"
+for b in 0 -5; do
+    if sh "$statusline" --budget "$b" >/dev/null 2>&1; then
+        fail "$t" "accepted '$b'"
+    fi
+done
+pass "$t"
+
+t="install-statusline --dry-run with the new flags writes nothing"
+fresh
+out=$(sh "$statusline" --dry-run --usage-id u1 --usage-api https://example.invalid/u --budget 7)
+case "$out" in *CLAUDE_STATUSLINE_USAGE_ID*) ;; *) fail "$t" "did not preview the env keys" ;; esac
+if [ -e "$CLAUDE_CONFIG_DIR/settings.json" ]; then fail "$t" "created settings.json"; fi
+if [ -e "$CLAUDE_CONFIG_DIR/statusline-command.sh" ]; then fail "$t" "installed a file"; fi
+pass "$t"
+
 printf '\nall tests passed\n'

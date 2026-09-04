@@ -33,10 +33,31 @@
 |---|---|
 | (없음) | 설치 + `settings.json` 패치 |
 | `--dry-run` | 무엇을 할지만 출력하고 **아무것도 쓰지 않음** |
+| `--usage-id ID` | `env.CLAUDE_STATUSLINE_USAGE_ID` 설정 |
+| `--usage-api URL` | `env.CLAUDE_STATUSLINE_USAGE_API` 설정 |
+| `--budget N` | `env.CLAUDE_STATUSLINE_BUDGET` 설정 (양의 정수) |
 | `-h`, `--help`, `help` | 사용법 출력 후 중단 |
 
 이미 상태줄을 쓰고 있는 사용자라면 `--dry-run` 을 먼저 돌려 보여 준 뒤
 설치합니다.
+
+## Bedrock 비용 세그먼트 설정 (사내 PC)
+
+`~/.dotfiles-setup-mode` 가 `internal` 이고 `settings.json` 에
+`env.CLAUDE_STATUSLINE_USAGE_ID` 가 아직 없을 때만 해당합니다. 이때 스킬은
+**사용자에게 usage id 와 usage API URL 을 물어본 뒤** 그 값을 위 플래그로
+넘겨 설치합니다.
+
+스크립트는 절대 스스로 묻지 않습니다 — 비대화형으로 실행되므로 스크립트 안의
+`read` 는 그대로 멈춰 버립니다. 묻는 쪽은 하네스입니다: Claude Code 에서는
+`AskUserQuestion`, ask 도구가 없는 하네스는 답변에 질문을 적고 대기합니다.
+
+값은 `~/.zshrc.local` 같은 셸 rc 가 아니라 `settings.json` 의 `env` 블록에
+들어갑니다. Claude Code 가 이 블록을 상태줄 명령의 환경으로 주입하기 때문이며,
+`cache-ttl` 스킬이 `ENABLE_PROMPT_CACHING_1H` 에 쓰는 경로와 같습니다.
+플래그를 생략하면 그 키는 손대지 않습니다 — 이미 넣어 둔 값이 지워지는 일은
+없습니다. 두 값 중 하나만 넘기면 경고를 출력하되 준 값은 그대로 쓰고 exit 0
+입니다 (세그먼트는 둘 다 채워질 때까지 꺼진 상태로 남습니다).
 
 ## 선행 조건
 
@@ -53,7 +74,8 @@
    백업했다는 사실을 출력합니다. 내용이 같으면 백업하지 않습니다.
 3. `settings.json` 의 `.statusLine` 을
    `{"type":"command","command":"<절대경로>/statusline-command.sh"}` 로 설정
-   (#1751 F-4).
+   (#1751 F-4). 같은 병합에서 `--usage-id` / `--usage-api` / `--budget` 로
+   넘어온 `env.CLAUDE_STATUSLINE_*` 키도 함께 씁니다.
 
 두 파일은 반드시 같은 디렉터리에 나란히 있어야 합니다 —
 `statusline-command.sh` 가 자신이 resolve 된 경로의 **형제**로
@@ -78,7 +100,7 @@
 | 코드 | 의미 | 올바른 대응 |
 |---|---|---|
 | 0 | 성공 | 설치 경로와 `statusLine.command` 보고 |
-| 2 | 알 수 없는 인자 | `--dry-run` / `--help` 만 존재 |
+| 2 | 알 수 없는 인자, 값 없는 플래그, 양의 정수가 아닌 `--budget` | 호출을 고쳐 재실행 (`--help` 참고) |
 | 3 | `jq` 없음 | 설치 안내 전달 후 중단 |
 | 4 | `settings.json` 이 유효한 JSON 이 아님 | `.bak` 저장됨, 아무것도 쓰지 않음 |
 | 5 | 번들 asset 누락 | 플러그인 설치가 손상됨. 재설치 |
@@ -100,8 +122,9 @@ usage API 호스트를 하드코딩하는데, 이 저장소는 공개이므로 �
 `CLAUDE_STATUSLINE_USAGE_ID` / `CLAUDE_STATUSLINE_USAGE_API` 환경변수에서 읽고
 (예산은 선택적 `CLAUDE_STATUSLINE_BUDGET`, 기본 175), 둘 다 설정돼 있지 않으면
 세그먼트 자체를 건너뜁니다. 설정하지 않은 설치본은 네트워크 호출을 하지
-않습니다. **재번들 때마다 이 변경을 다시 적용하세요.** 그 블록 외에는 asset 을
-손으로 고치지 마세요.
+않습니다. 그 값들은 위 "Bedrock 비용 세그먼트 설정" 대로 설치 스크립트가
+`settings.json` 의 `env` 블록에 써 넣습니다. **재번들 때마다 이 변경을 다시
+적용하세요.** 그 블록 외에는 asset 을 손으로 고치지 마세요.
 
 ## 독립 실행 (#1751 NF-1)
 
