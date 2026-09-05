@@ -309,14 +309,15 @@ footer { border-top: 1px solid var(--border); padding: 30px 0 60px; color: var(-
 <h2>Bedrock 비용 세그먼트 설정</h2>
 <p class="sec-sub">스크립트는 절대 스스로 묻지 않습니다 &mdash; 묻는 쪽은 하네스입니다</p>
 <div class="card">
-  <p><b>해당 조건</b> &mdash; <code>~/.dotfiles-setup-mode</code> 가 <code>internal</code> <b>이거나 아예 없고(비어 있고)</b>,
-  <code>settings.json</code> 에 <code>env.CLAUDE_STATUSLINE_USAGE_ID</code> 가 아직 없을 때. 이때 스킬은 사용자에게 usage id 와 usage API URL 을 물어본 뒤 그 값을 위 플래그로 넘겨 설치합니다.</p>
+  <p><b>해당 조건</b> &mdash; <code>~/.dotfiles-setup-mode</code> 가 <code>internal</code> <b>이거나 사용자가 비용 세그먼트를 직접 요청했고</b>,
+  <code>settings.json</code> 에 <code>env.CLAUDE_STATUSLINE_USAGE_ID</code> 가 아직 없을 때. 이때 스킬은 사용자에게 usage id 와 usage API URL 을 물어본 뒤 그 값을 위 플래그로 넘겨 설치합니다.
+  파일이 없거나 비어 있고 사용자 요청도 없으면 아무것도 묻지 않고 건너뛰며, 비용 세그먼트 없이 설치합니다.</p>
 </div>
 <div class="grid g2" style="margin-top:16px">
-  <div class="card"><h4>파일이 없는 경우를 포함시킨 이유</h4>
-    <p>그 파일은 dotfiles 산출물입니다 &mdash; 이 플러그인만 단독으로 설치한 동료 PC 에는 애초에 없습니다.
-    <code>internal</code> 만 허용하면 그런 PC 는 이유도 모른 채 세그먼트를 영원히 못 켭니다.</p>
-    <p>실제 잠금장치는 두 환경변수 쪽입니다: 설치 시 플래그를 명시적으로 넘긴 사람에게만 값이 생기므로, 설정하지 않은 PC 는 여전히 아무것도 그리지 않고 네트워크 호출도 하지 않습니다.
+  <div class="card"><h4>파일이 없는 경우를 묻는 조건에서 뺀 이유</h4>
+    <p>그 파일은 dotfiles 산출물입니다 &mdash; 없다는 것은 "이 PC 는 dotfiles 를 클론한 적이 없다" 는 적극적 증거이고,
+    조직 내부 usage id 를 갖고 있지 않다는 뜻입니다. 답을 모르는 사용자에게 묻지 않는 것이 맞습니다.</p>
+    <p>런타임 게이트는 반대로 그 경우를 허용합니다 &mdash; 거기서는 두 환경변수가 실제 잠금장치이기 때문입니다: 설치 시 플래그를 명시적으로 넘긴 사람에게만 값이 생기므로, 설정하지 않은 PC 는 여전히 아무것도 그리지 않고 네트워크 호출도 하지 않습니다.
     파일에 <code>external</code> 처럼 다른 값이 적혀 있으면 "이 PC 는 대상이 아니다" 라는 명시적 선언이므로 그대로 존중합니다.</p>
   </div>
   <div class="card"><h4>왜 셸 rc 가 아니라 settings.json 의 env 인가</h4>
@@ -357,7 +358,7 @@ Claude Code 가 이 자리의 <code>~</code> 를 안정적으로 확장하지 �
   <div class="card"><h4>손실 없는 병합</h4><p><code>hooks</code>, <code>env</code>, <code>model</code>, <code>permissions</code> 전부 보존. 임시 파일 + <code>mv</code> 라서 <code>jq</code> 실패가 원본을 자르지 못합니다.</p></div>
   <div class="card"><h4>JSON 이 깨져 있으면</h4><p><code>settings.json.bak</code> 만 남기고 <span class="tag no">exit 4</span> 로 멈춥니다.</p></div>
   <div class="card"><h4><code>--dry-run</code></h4><p>파일을 하나도 만들지 않습니다 &mdash; <code>settings.json</code> 조차 생성하지 않습니다.</p></div>
-  <div class="card"><h4>독립 실행 (#1751 NF-1)</h4><p>필요한 파일은 전부 스킬 디렉터리 안에 있고, 네트워크도 쓰지 않습니다.</p></div>
+  <div class="card"><h4>독립 실행 (#1751 NF-1)</h4><p>필요한 파일은 전부 스킬 디렉터리 안에 있습니다. 설치된 상태줄은 <code>--usage-id</code> 와 <code>--usage-api</code> 를 넘겼을 때만 usage API 를 호출하고, 그 외에는 네트워크를 쓰지 않습니다.</p></div>
 </div>
 <div class="tbl-wrap" style="margin-top:18px"><table>
   <thead><tr><th>코드</th><th>의미</th><th>올바른 대응</th></tr></thead>

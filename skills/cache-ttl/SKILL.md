@@ -22,7 +22,8 @@ Writes one key in `settings.json`. Everything else in that file is preserved.
 ## Help
 
 If the argument is `-h`, `--help`, or `help`, run
-`scripts/set-cache-ttl.sh --help` and print its output verbatim, then stop.
+`sh "${CLAUDE_PLUGIN_ROOT:-.}/skills/cache-ttl/scripts/set-cache-ttl.sh" --help`
+and print its output verbatim, then stop.
 
 ## Step 1: Pick the mode
 
@@ -35,8 +36,8 @@ If the argument is `-h`, `--help`, or `help`, run
 ## Step 2: Run the script
 
 ```
-sh skills/cache-ttl/scripts/set-cache-ttl.sh 1h
-sh skills/cache-ttl/scripts/set-cache-ttl.sh 5m
+sh "${CLAUDE_PLUGIN_ROOT:-.}/skills/cache-ttl/scripts/set-cache-ttl.sh" 1h
+sh "${CLAUDE_PLUGIN_ROOT:-.}/skills/cache-ttl/scripts/set-cache-ttl.sh" 5m
 ```
 
 No argument means `5m`. The script targets
