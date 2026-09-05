@@ -23,7 +23,7 @@
   "interface": {
     "displayName": "Claude Code Config",
     "shortDescription": "Prompt-cache TTL and status line for Claude Code",
-    "longDescription": "Two skills that configure Claude Code itself by patching settings.json. cache-ttl flips env.ENABLE_PROMPT_CACHING_1H so the prompt cache lives one hour instead of five minutes, and removes the key to go back. statusline-setup copies a bundled statusline-command.sh and statusline-tokens.sh into the Claude config directory and points the statusLine block at the installed path. Both target ${CLAUDE_CONFIG_DIR:-$HOME/.claude} so multi-account setups work, both merge with jq through a temp file so no unrelated key is ever lost, and both refuse to touch invalid JSON rather than guessing. Every file they need ships inside the plugin: no dotfiles checkout, no network.",
+    "longDescription": "Two skills that configure Claude Code itself by patching settings.json. cache-ttl flips env.ENABLE_PROMPT_CACHING_1H so the prompt cache lives one hour instead of five minutes, and removes the key to go back. statusline-setup copies a bundled statusline-command.sh and statusline-tokens.sh into the Claude config directory and points the statusLine block at the installed path. Both target ${CLAUDE_CONFIG_DIR:-$HOME/.claude} so multi-account setups work, both merge with jq through a temp file so no unrelated key is ever lost, and both refuse to touch invalid JSON rather than guessing. Every file they need ships inside the plugin: no dotfiles checkout, and no network call unless the status line is installed with a usage id and API URL.",
     "developerName": "dEitY719",
     "category": "Developer Tools",
     "capabilities": [

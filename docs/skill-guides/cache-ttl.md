@@ -41,7 +41,7 @@ Claude Code 의 프롬프트 캐시 TTL 을 5분 기본값과 1시간 사이에�
 
 1. **모드 결정** — 사용자가 "1시간"/"1h"/"길게" 라고 하면 `1h`, "5분"/"기본값"/
    "꺼줘" 면 `5m`. 애매하면 **묻습니다**. 추측하지 않습니다.
-2. **스크립트 실행** — `skills/cache-ttl/scripts/set-cache-ttl.sh <mode>`.
+2. **스크립트 실행** — `sh "${CLAUDE_PLUGIN_ROOT:-.}/skills/cache-ttl/scripts/set-cache-ttl.sh" <mode>`.
    모델이 `jq` 를 직접 타이핑하지 않는 것이 핵심입니다.
 3. **보고** — 스크립트가 출력한 before -> after 줄을 그대로 전달하고,
    "Claude Code 재시작 후 적용" 한 문장을 덧붙입니다.
@@ -52,7 +52,8 @@ Claude Code 의 프롬프트 캐시 TTL 을 5분 기본값과 1시간 사이에�
 계정이 여러 개면 호출 전에 변수를 지정합니다.
 
 ```sh
-CLAUDE_CONFIG_DIR=~/.claude-work1 sh skills/cache-ttl/scripts/set-cache-ttl.sh 1h
+CLAUDE_CONFIG_DIR=~/.claude-work1 \
+  sh "${CLAUDE_PLUGIN_ROOT:-.}/skills/cache-ttl/scripts/set-cache-ttl.sh" 1h
 ```
 
 ## 안전 계약

@@ -36,15 +36,15 @@ If the argument is `-h`, `--help`, or `help`, run
 
 ## Step 2: Ask for the Bedrock cost values, if this machine needs them
 
-Only when `~/.dotfiles-setup-mode` reads `internal` **or the user asked for the
-cost segment**, and `.env.CLAUDE_STATUSLINE_USAGE_ID` is absent from
+Only when **the user asked for the cost segment** or `~/.dotfiles-setup-mode`
+reads `internal` — and `.env.CLAUDE_STATUSLINE_USAGE_ID` is absent from
 `${CLAUDE_CONFIG_DIR:-$HOME/.claude}/settings.json`: ask for the usage id, the
 usage-API URL and a budget if not the default 175, then pass them as flags in
 Step 3. An absent or empty file means this machine has no dotfiles — skip this
 step silently and install with no cost segment.
 
 **You** ask — the script never prompts (non-interactive: a `read` would hang).
-In Claude Code use `AskUserQuestion`; another harness asks in its reply, waits.
+In Claude Code use `AskUserQuestion`; a harness without one asks in its reply and waits.
 
 ## Step 3: Preview, then install
 
@@ -54,10 +54,10 @@ sh "${CLAUDE_PLUGIN_ROOT:-.}/skills/statusline-setup/scripts/install-statusline.
     --usage-id ID --usage-api URL [--budget N]
 ```
 
-Run `--dry-run` first when the user already has a status line, and show them the
-output before writing. Target is `${CLAUDE_CONFIG_DIR:-$HOME/.claude}`, so a
-multi-account setup installs per account by exporting `CLAUDE_CONFIG_DIR` first.
-Do **not** hand-write `jq` against `settings.json` or copy the assets yourself.
+Run `--dry-run` first with the same flags — a bare one hides the `env` keys —
+and show that output before writing. Target is `${CLAUDE_CONFIG_DIR:-$HOME/.claude}`,
+so a multi-account setup installs per account by exporting `CLAUDE_CONFIG_DIR`
+first. Do **not** hand-write `jq` against `settings.json` or copy the assets yourself.
 
 ## Step 4: Report
 
