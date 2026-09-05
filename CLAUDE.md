@@ -41,11 +41,12 @@ sh "${CLAUDE_PLUGIN_ROOT:-.}/skills/cache-ttl/scripts/set-cache-ttl.sh" 1h
 
 Installed from the marketplace the skill lives under the plugin root while the
 working directory is the user's own project, so a bare
-`sh skills/<name>/scripts/<x>.sh` resolves against that project and fails with
-`No such file or directory`. The `:-.` fallback leaves a maintainer running
-from a checkout unaffected. This applies to `--help` routes too — a path
-relative to the skill directory is no more resolvable than one relative to the
-repo root.
+`sh skills/<name>/scripts/<x>.sh` resolves against that project and fails.
+`--help` routes included.
+
+Only Claude Code sets `CLAUDE_PLUGIN_ROOT`. The Codex, Gemini, Kimi, Hermes and
+OpenCode packagings this repo also ships fall through to `:-.`, so a bundled
+script must stay runnable from the repo root.
 
 ## The statusline assets are a snapshot, not a link
 
