@@ -28,7 +28,7 @@ upstream's own workflow rather than this repo's. Renaming them would buy two
 accurate lines at the cost of a **second** sanctioned deviation that every
 future re-bundle has to remember to re-apply. The snapshot contract is worth
 more than that, so they stay as-is on purpose. Do not "fix" them
-(claudecode-skills #4, Section B).
+(#4, Section B).
 
 ## The one sanctioned deviation
 

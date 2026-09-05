@@ -57,8 +57,9 @@ upstream. When dotfiles changes those files, this repo does not notice.
 
 That drift is an explicit **Non-Goal of dotfiles #1751**, not a defect. Re-bundling is a
 deliberate manual act: copy both files over, re-apply the one sanctioned
-deviation below, bump the commit SHA in this file and in
-`skills/statusline-setup/SKILL.md`, and re-run `tests/run.sh`.
+deviation below, bump the commit SHA in every file that carries it, and
+re-run `tests/run.sh`. The authoritative checklist — including which files
+those are — is `skills/statusline-setup/references/re-bundling.md`.
 
 ### The one sanctioned deviation from the original
 
