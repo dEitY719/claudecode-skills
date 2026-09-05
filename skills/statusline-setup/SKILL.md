@@ -51,7 +51,7 @@ In Claude Code use `AskUserQuestion`; a harness without one asks in its reply an
 ```
 sh "${CLAUDE_PLUGIN_ROOT:-.}/skills/statusline-setup/scripts/install-statusline.sh" --dry-run
 sh "${CLAUDE_PLUGIN_ROOT:-.}/skills/statusline-setup/scripts/install-statusline.sh" \
-    --usage-id ID --usage-api URL [--budget N]
+    [--usage-id ID --usage-api URL] [--budget N]   # flags only if Step 2 asked
 ```
 
 Run `--dry-run` first with the same flags — a bare one hides the `env` keys —
