@@ -81,12 +81,12 @@
 ## 동작 단계
 
 1. 번들 asset 2개를 `${CLAUDE_CONFIG_DIR:-$HOME/.claude}/` 로 복사하고
-   둘 다 `chmod +x` (#1751 F-3).
+   둘 다 `chmod +x` (dotfiles #1751 F-3).
 2. 대상 파일이 이미 있고 **내용이 다르면** `<name>.bak` 으로 백업한 뒤 교체하고,
    백업했다는 사실을 출력합니다. 내용이 같으면 백업하지 않습니다.
 3. `settings.json` 의 `.statusLine` 을
    `{"type":"command","command":"<절대경로>/statusline-command.sh"}` 로 설정
-   (#1751 F-4). 같은 병합에서 `--usage-id` / `--usage-api` / `--budget` 로
+   (dotfiles #1751 F-4). 같은 병합에서 `--usage-id` / `--usage-api` / `--budget` 로
    넘어온 `env.CLAUDE_STATUSLINE_*` 키도 함께 씁니다.
 
 두 파일은 반드시 같은 디렉터리에 나란히 있어야 합니다 —
@@ -117,16 +117,17 @@
 | 4 | `settings.json` 이 유효한 JSON 이 아님 | `.bak` 저장됨, 아무것도 쓰지 않음 |
 | 5 | 번들 asset 누락 | 플러그인 설치가 손상됨. 재설치 |
 
-## asset 은 스냅샷입니다 (#1751 Non-Goal)
+## asset 은 스냅샷입니다 (dotfiles #1751 Non-Goal)
 
 `skills/statusline-setup/assets/` 의 두 파일은 `dEitY719/dotfiles` 의
 `claude/statusline-{command,tokens}.sh` 를 커밋 `b23e4d9` 시점에 복사한
 것입니다. upstream 을 추적하지 않습니다.
 
-dotfiles 쪽이 바뀌어도 이 저장소는 알아채지 못하며, 이 드리프트는 #1751 의
+dotfiles 쪽이 바뀌어도 이 저장소는 알아채지 못하며, 이 드리프트는 dotfiles #1751 의
 **명시적 Non-Goal** 이지 결함이 아닙니다. 재번들은 의도적인 수작업입니다 —
-두 파일을 다시 복사하고 아래 변경 1건을 다시 적용한 뒤 `CLAUDE.md` 와
-`SKILL.md` 의 커밋 SHA 를 갱신하고 `tests/run.sh` 를 다시 돌립니다.
+두 파일을 다시 복사하고 아래 변경 1건을 다시 적용한 뒤 SHA 가 적힌 모든 파일의
+커밋 SHA 를 갱신하고 `tests/run.sh` 를 다시 돌립니다. 갱신 대상 목록의 SSOT 는
+`skills/statusline-setup/references/re-bundling.md` 입니다.
 
 `statusline-tokens.sh` 는 원본과 바이트 단위로 동일합니다. `statusline-command.sh`
 는 한 곳만 다릅니다 — 원본의 Bedrock 비용 세그먼트는 조직 내부 사용자 id 와
@@ -138,7 +139,7 @@ usage API 호스트를 하드코딩하는데, 이 저장소는 공개이므로 �
 `settings.json` 의 `env` 블록에 써 넣습니다. **재번들 때마다 이 변경을 다시
 적용하세요.** 그 블록 외에는 asset 을 손으로 고치지 마세요.
 
-## 독립 실행 (#1751 NF-1)
+## 독립 실행 (dotfiles #1751 NF-1)
 
 `dEitY719/dotfiles` 를 한 번도 클론하지 않은 PC 에서도 그대로 동작합니다.
 필요한 파일은 전부 스킬 디렉터리 안에 있습니다. 설치된 상태줄은 `--usage-id` 와

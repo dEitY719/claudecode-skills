@@ -339,9 +339,9 @@ Claude Code 에서는 <code>AskUserQuestion</code>, ask 도구가 없는 하네�
   <div class="card"><h4>bash 4.4 이상</h4><p><code>statusline-command.sh</code> 가 연관 배열을 씁니다. macOS 기본 bash 는 3.2 이므로 <code>brew install bash</code> 가 먼저입니다.</p></div>
 </div>
 <ol class="steps" style="margin-top:26px">
-  <li><b>asset 복사</b>번들 asset 2개를 <code>${CLAUDE_CONFIG_DIR:-$HOME/.claude}/</code> 로 복사하고 둘 다 <code>chmod +x</code> (#1751 F-3).</li>
+  <li><b>asset 복사</b>번들 asset 2개를 <code>${CLAUDE_CONFIG_DIR:-$HOME/.claude}/</code> 로 복사하고 둘 다 <code>chmod +x</code> (dotfiles #1751 F-3).</li>
   <li><b>백업</b>대상 파일이 이미 있고 <b>내용이 다르면</b> <code>&lt;name&gt;.bak</code> 으로 백업한 뒤 교체하고, 백업했다는 사실을 출력합니다. 내용이 같으면 백업하지 않습니다.</li>
-  <li><b>settings.json 패치</b><code>.statusLine</code> 을 <code>{"type":"command","command":"&lt;절대경로&gt;/statusline-command.sh"}</code> 로 설정 (#1751 F-4). 같은 병합에서 플래그로 넘어온 <code>env.CLAUDE_STATUSLINE_*</code> 키도 함께 씁니다.</li>
+  <li><b>settings.json 패치</b><code>.statusLine</code> 을 <code>{"type":"command","command":"&lt;절대경로&gt;/statusline-command.sh"}</code> 로 설정 (dotfiles #1751 F-4). 같은 병합에서 플래그로 넘어온 <code>env.CLAUDE_STATUSLINE_*</code> 키도 함께 씁니다.</li>
 </ol>
 <div class="note"><p>두 파일은 반드시 같은 디렉터리에 나란히 있어야 합니다 &mdash;
 <code>statusline-command.sh</code> 가 자신이 resolve 된 경로의 <b>형제</b>로 <code>statusline-tokens.sh</code> 를 source 하기 때문입니다.</p></div>
@@ -358,7 +358,7 @@ Claude Code 가 이 자리의 <code>~</code> 를 안정적으로 확장하지 �
   <div class="card"><h4>손실 없는 병합</h4><p><code>hooks</code>, <code>env</code>, <code>model</code>, <code>permissions</code> 전부 보존. 임시 파일 + <code>mv</code> 라서 <code>jq</code> 실패가 원본을 자르지 못합니다.</p></div>
   <div class="card"><h4>JSON 이 깨져 있으면</h4><p><code>settings.json.bak</code> 만 남기고 <span class="tag no">exit 4</span> 로 멈춥니다.</p></div>
   <div class="card"><h4><code>--dry-run</code></h4><p>파일을 하나도 만들지 않습니다 &mdash; <code>settings.json</code> 조차 생성하지 않습니다.</p></div>
-  <div class="card"><h4>독립 실행 (#1751 NF-1)</h4><p>필요한 파일은 전부 스킬 디렉터리 안에 있습니다. 설치된 상태줄은 <code>--usage-id</code> 와 <code>--usage-api</code> 를 넘겼을 때만 usage API 를 호출하고, 그 외에는 네트워크를 쓰지 않습니다.</p></div>
+  <div class="card"><h4>독립 실행 (dotfiles #1751 NF-1)</h4><p>필요한 파일은 전부 스킬 디렉터리 안에 있습니다. 설치된 상태줄은 <code>--usage-id</code> 와 <code>--usage-api</code> 를 넘겼을 때만 usage API 를 호출하고, 그 외에는 네트워크를 쓰지 않습니다.</p></div>
 </div>
 <div class="tbl-wrap" style="margin-top:18px"><table>
   <thead><tr><th>코드</th><th>의미</th><th>올바른 대응</th></tr></thead>
@@ -374,13 +374,14 @@ Claude Code 가 이 자리의 <code>~</code> 를 안정적으로 확장하지 �
 </section>
 <section id="snapshot" data-reveal>
 
-<h2>asset 은 스냅샷입니다 (#1751 Non-Goal)</h2>
+<h2>asset 은 스냅샷입니다 (dotfiles #1751 Non-Goal)</h2>
 <p class="sec-sub">upstream 을 추적하지 않으며, 그 드리프트는 결함이 아닙니다</p>
 <div class="card">
   <p><code>skills/statusline-setup/assets/</code> 의 두 파일은 <code>dEitY719/dotfiles</code> 의
   <code>claude/statusline-{command,tokens}.sh</code> 를 커밋 <code>b23e4d9</code> 시점에 복사한 것입니다.</p>
   <p>재번들은 의도적인 수작업입니다 &mdash; 두 파일을 다시 복사하고 아래 변경 1건을 다시 적용한 뒤
-  <code>CLAUDE.md</code> 와 <code>SKILL.md</code> 의 커밋 SHA 를 갱신하고 <code>tests/run.sh</code> 를 다시 돌립니다.</p>
+  SHA 가 적힌 모든 파일의 커밋 SHA 를 갱신하고 <code>tests/run.sh</code> 를 다시 돌립니다.
+  갱신 대상 목록의 SSOT 는 <code>skills/statusline-setup/references/re-bundling.md</code> 입니다.</p>
 </div>
 <div class="grid g2" style="margin-top:16px">
   <div class="card"><h4><span class="tag ok">동일</span> statusline-tokens.sh</h4><p>원본과 바이트 단위로 동일합니다.</p></div>

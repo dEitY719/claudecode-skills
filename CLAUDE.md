@@ -55,10 +55,12 @@ script must stay runnable from the repo root.
 `claude/statusline-{command,tokens}.sh` at commit `b23e4d9`. They do not track
 upstream. When dotfiles changes those files, this repo does not notice.
 
-That drift is an explicit **Non-Goal of #1751**, not a defect. Re-bundling is a
-deliberate manual act: copy both files over, re-apply the one sanctioned
-deviation below, bump the commit SHA in this file and in
-`skills/statusline-setup/SKILL.md`, and re-run `tests/run.sh`.
+That drift is an explicit **Non-Goal of dotfiles #1751**, not a defect.
+Re-bundling is a deliberate manual act: copy both files over, re-apply the
+one sanctioned deviation below, bump the commit SHA in every file that
+carries it, and re-run `tests/run.sh`. The authoritative checklist —
+including which files those are — is
+`skills/statusline-setup/references/re-bundling.md`.
 
 ### The one sanctioned deviation from the original
 
@@ -90,8 +92,9 @@ as a prerequisite in `SKILL.md`, not worked around.
 
 Both scripts follow the same contract; keep them in step.
 
-- **Target dir is `${CLAUDE_CONFIG_DIR:-$HOME/.claude}`** (#1751 F-5). Never
-  hard-code `~/.claude` — multi-account setups switch by exporting that var.
+- **Target dir is `${CLAUDE_CONFIG_DIR:-$HOME/.claude}`** (dotfiles #1751
+  F-5). Never hard-code `~/.claude` — multi-account setups switch by
+  exporting that var.
 - **`jq` or nothing.** Missing `jq` prints install guidance and exits 3. There
   is no `sed` / `python -c` fallback, and adding one is a regression: a
   half-parsed JSON edit that "usually works" is worse than a refusal.
@@ -192,5 +195,5 @@ The version appears in seven manifests: `.claude-plugin/marketplace.json`,
 `.claude-plugin/plugin.json`, `.codex-plugin/plugin.json`,
 `.kimi-plugin/plugin.json`, `.hermes-plugin/plugin.yaml`,
 `gemini-extension.json`, and `package.json`. CI checks that they agree — bump
-all of them together. Versioning is independent per repo (#1410 D-9); this repo
-does not move in lockstep with its siblings.
+all of them together. Versioning is independent per repo (dotfiles #1410 D-9);
+this repo does not move in lockstep with its siblings.

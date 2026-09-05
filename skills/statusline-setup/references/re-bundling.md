@@ -10,11 +10,25 @@ Re-bundling is a deliberate manual act:
 
 1. Copy both files over from the dotfiles checkout.
 2. Re-apply the one sanctioned deviation below.
-3. Bump the commit SHA in `CLAUDE.md`, `SKILL.md`, `README.md` and this file.
+3. Bump the commit SHA in all six files that carry it: `CLAUDE.md`,
+   `README.md`, `SKILL.md`, this file, and
+   `docs/skill-guides/statusline-setup.{md,html}`.
 4. Re-run `sh tests/run.sh`.
 
 Never patch an installed copy in place — edit `assets/` and re-run the
 installer.
+
+## Deliberately not fixed: the stale skill names in the comments
+
+`statusline-command.sh` documents its git-status segment with the pre-split
+command names `/gh-commit` and `/gh-pr` (lines 228-229). Those skills are now
+`gh-pr:commit` and `gh-pr:create`, so the comments are stale — but they are
+comments: never executed, never rendered into the status line, and they describe
+upstream's own workflow rather than this repo's. Renaming them would buy two
+accurate lines at the cost of a **second** sanctioned deviation that every
+future re-bundle has to remember to re-apply. The snapshot contract is worth
+more than that, so leave them as-is
+([#4](https://github.com/dEitY719/claudecode-skills/issues/4), Section B).
 
 ## The one sanctioned deviation
 

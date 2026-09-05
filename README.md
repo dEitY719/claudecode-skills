@@ -93,7 +93,7 @@ Antigravity (`agy`) shares `~/.gemini`, so it inherits the install.
 Both skills are one `Bash` call over a bundled POSIX-sh script, so they port
 cleanly everywhere. The per-harness tool mappings are documented once, in
 [`dEitY719/harness-skills/references/`](https://github.com/dEitY719/harness-skills/tree/main/references)
-(#1410 F-5).
+(dotfiles #1410 F-5).
 
 | Skill | Claude Code | Codex | Kimi | Gemini / Antigravity | Hermes | OpenCode |
 |-------|:-----------:|:-----:|:----:|:--------------------:|:------:|:--------:|
@@ -149,7 +149,7 @@ per case and exiting non-zero on the first failure.
 [`.github/workflows/validate.yml`](.github/workflows/validate.yml) calls the
 reusable workflow owned by
 [`dEitY719/harness-skills`](https://github.com/dEitY719/harness-skills/blob/main/.github/workflows/skill-check.yml)
-(#1410 D-10) — manifest parsing, required files, skill frontmatter,
+(dotfiles #1410 D-10) — manifest parsing, required files, skill frontmatter,
 progressive-disclosure line limits, the Codex description budget, version
 agreement, shellcheck, and an emoji gate.
 
@@ -182,7 +182,8 @@ values when the machine needs them and `install-statusline.sh --usage-id ID
 merge it uses for `statusLine`. An omitted flag leaves that key untouched.
 
 This repo answers dotfiles #1751. It is a sibling of `authoring-skills`,
-`harness-skills`, and the other split-out plugin repos from the #1410 migration.
+`harness-skills`, and the other split-out plugin repos from the
+dotfiles #1410 migration.
 
 ## License
 
