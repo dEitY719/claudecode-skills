@@ -312,7 +312,7 @@ footer { border-top: 1px solid var(--border); padding: 30px 0 60px; color: var(-
   <li><b>보고</b>스크립트가 출력한 before &#8594; after 줄을 그대로 전달하고, "Claude Code 재시작 후 적용" 한 문장을 덧붙입니다.</li>
 </ol>
 <h3 style="margin-top:28px">대상 파일과 멀티 계정</h3>
-<p style="margin-top:8px">대상은 <code>${CLAUDE_CONFIG_DIR:-$HOME/.claude}/settings.json</code> 입니다 (#1751 F-5). 계정이 여러 개면 호출 전에 변수를 지정합니다.</p>
+<p style="margin-top:8px">대상은 <code>${CLAUDE_CONFIG_DIR:-$HOME/.claude}/settings.json</code> 입니다 (dotfiles #1751 F-5). 계정이 여러 개면 호출 전에 변수를 지정합니다.</p>
 <pre><code>CLAUDE_CONFIG_DIR=~/.claude-work1 \
   sh "${CLAUDE_PLUGIN_ROOT:-.}/skills/cache-ttl/scripts/set-cache-ttl.sh" 1h</code></pre>
 
@@ -325,7 +325,7 @@ footer { border-top: 1px solid var(--border); padding: 30px 0 60px; color: var(-
   <div class="card"><h4>손실 없는 병합</h4><p><code>hooks</code>, <code>model</code>, <code>statusLine</code>, <code>permissions</code>, 그리고 <code>.env</code> 안의 다른 키까지 전부 보존됩니다. <code>jq</code> 결과를 대상 디렉터리의 임시 파일에 쓴 뒤 <code>mv</code> 하므로, <code>jq</code> 가 실패해도 원본이 잘리지 않습니다.</p></div>
   <div class="card"><h4>settings.json 이 없으면</h4><p><code>{}</code> 골격을 만든 뒤 패치합니다.</p></div>
   <div class="card"><h4>JSON 이 깨져 있으면</h4><p><code>settings.json.bak</code> 으로 복사만 하고 <span class="tag no">exit 4</span> 로 멈춥니다. 깨진 JSON 을 덮어쓰는 일은 절대 없습니다.</p></div>
-  <div class="card"><h4>독립 실행 (#1751 NF-1)</h4><p><code>dEitY719/dotfiles</code> 를 한 번도 클론하지 않은 PC 에서도 그대로 동작합니다. POSIX sh + <code>jq</code> 외에 아무것도 요구하지 않고, 스킬 디렉터리 바깥의 어떤 경로도 참조하지 않습니다.</p></div>
+  <div class="card"><h4>독립 실행 (dotfiles #1751 NF-1)</h4><p><code>dEitY719/dotfiles</code> 를 한 번도 클론하지 않은 PC 에서도 그대로 동작합니다. POSIX sh + <code>jq</code> 외에 아무것도 요구하지 않고, 스킬 디렉터리 바깥의 어떤 경로도 참조하지 않습니다.</p></div>
 </div>
 <div class="note warn"><p><code>sed</code> / <code>python -c</code> 로 우회하지 않습니다. 스크립트가 거부하면 그대로 멈추는 것이 올바른 동작입니다.</p></div>
 

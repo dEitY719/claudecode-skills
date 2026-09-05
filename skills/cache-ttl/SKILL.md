@@ -5,6 +5,7 @@ description: >-
   env.ENABLE_PROMPT_CACHING_1H in settings.json. Use on "프롬프트 캐시 1시간으로",
   "cache TTL 5분으로 되돌려", "/claudecode:cache-ttl". Do NOT use to edit any
   other setting, or to change the model (that is `/model`).
+license: MIT
 compatibility:
   tools: Bash, Read
 metadata:

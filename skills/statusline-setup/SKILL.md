@@ -6,6 +6,7 @@ description: >-
   at it. Use on "상태줄 설치해줘", "statusline 세팅", "/claudecode:statusline-setup".
   Do NOT use to write a custom status line from scratch, or to edit any other
   settings key.
+license: MIT
 compatibility:
   tools: Bash, Read
   network: optional
@@ -86,8 +87,7 @@ the script echoed, and say the status line appears after Claude Code restarts.
 ## Constraints
 
 - Touches `statusLine` and the three `CLAUDE_STATUSLINE_*` keys under `env`,
-  nothing else. Never edit `model`, `hooks`, `permissions`, or another `env`
-  entry from this skill.
+  nothing else — never `model`, `hooks`, `permissions`, or another `env` entry.
 - Self-contained: no dotfiles checkout, no file outside this skill; the status
   line calls the usage API only when `--usage-id` and `--usage-api` were given.
 - The assets are a **point-in-time snapshot** of `dEitY719/dotfiles` (commit

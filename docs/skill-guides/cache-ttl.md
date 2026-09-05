@@ -48,7 +48,7 @@ Claude Code 의 프롬프트 캐시 TTL 을 5분 기본값과 1시간 사이에�
 
 ## 대상 파일과 멀티 계정
 
-대상은 `${CLAUDE_CONFIG_DIR:-$HOME/.claude}/settings.json` 입니다 (#1751 F-5).
+대상은 `${CLAUDE_CONFIG_DIR:-$HOME/.claude}/settings.json` 입니다 (dotfiles #1751 F-5).
 계정이 여러 개면 호출 전에 변수를 지정합니다.
 
 ```sh
@@ -77,7 +77,7 @@ CLAUDE_CONFIG_DIR=~/.claude-work1 \
 `sed` / `python -c` 로 우회하지 않습니다. 깨진 JSON 을 건드리지 않는 것이
 기능입니다.
 
-## 독립 실행 (#1751 NF-1)
+## 독립 실행 (dotfiles #1751 NF-1)
 
 `dEitY719/dotfiles` 를 한 번도 클론하지 않은 PC 에서도 그대로 동작합니다.
 스크립트는 POSIX sh + `jq` 외에 아무것도 요구하지 않고, 스킬 디렉터리 바깥의
