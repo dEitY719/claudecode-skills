@@ -27,8 +27,7 @@ comments: never executed, never rendered into the status line, and they describe
 upstream's own workflow rather than this repo's. Renaming them would buy two
 accurate lines at the cost of a **second** sanctioned deviation that every
 future re-bundle has to remember to re-apply. The snapshot contract is worth
-more than that, so they stay as-is on purpose. Do not "fix" them
-(#4, Section B).
+more than that, so leave them as-is (#4, Section B).
 
 ## The one sanctioned deviation
 
