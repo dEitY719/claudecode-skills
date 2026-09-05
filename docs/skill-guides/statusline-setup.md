@@ -125,8 +125,9 @@
 
 dotfiles 쪽이 바뀌어도 이 저장소는 알아채지 못하며, 이 드리프트는 dotfiles #1751 의
 **명시적 Non-Goal** 이지 결함이 아닙니다. 재번들은 의도적인 수작업입니다 —
-두 파일을 다시 복사하고 아래 변경 1건을 다시 적용한 뒤 `CLAUDE.md` 와
-`SKILL.md` 의 커밋 SHA 를 갱신하고 `tests/run.sh` 를 다시 돌립니다.
+두 파일을 다시 복사하고 아래 변경 1건을 다시 적용한 뒤 SHA 가 적힌 모든 파일의
+커밋 SHA 를 갱신하고 `tests/run.sh` 를 다시 돌립니다. 갱신 대상 목록의 SSOT 는
+`skills/statusline-setup/references/re-bundling.md` 입니다.
 
 `statusline-tokens.sh` 는 원본과 바이트 단위로 동일합니다. `statusline-command.sh`
 는 한 곳만 다릅니다 — 원본의 Bedrock 비용 세그먼트는 조직 내부 사용자 id 와
