@@ -1,0 +1,379 @@
+<!DOCTYPE html>
+<html lang="ko" class="theme-dark">
+<head>
+<meta charset="UTF-8">
+<meta name="viewport" content="width=device-width, initial-scale=1.0">
+<title>statusline-setup 사용 결과</title>
+<link rel="preconnect" href="https://fonts.googleapis.com">
+<link rel="preconnect" href="https://fonts.gstatic.com" crossorigin>
+<link href="https://fonts.googleapis.com/css2?family=Inter:wght@300;400;500;600;700;800;900&family=Noto+Sans+KR:wght@300;400;500;600;700;800;900&family=JetBrains+Mono:wght@400;600&display=swap" rel="stylesheet">
+<script src="https://cdn.jsdelivr.net/npm/html-to-image@1.11.11/dist/html-to-image.js"></script>
+<style>
+*, *::before, *::after { box-sizing: border-box; margin: 0; padding: 0; }
+:root { interpolate-size: allow-keywords; }
+
+html.theme-dark {
+  --bg: #0A0A0A; --surface: #141414; --surface-hover: #1C1C1C;
+  --border: rgba(255,255,255,0.08);
+  --text: #EDEDED; --text-secondary: #8b8b8b;
+  --accent: #3b82f6; --accent-secondary: #8b5cf6;
+  --positive: #10b981; --negative: #f43f5e; --warning: #f59e0b;
+  --code-bg: #0f0f0f;
+}
+html.theme-light {
+  --bg: #FAFAF9; --surface: #FFFFFF; --surface-hover: #F5F5F4;
+  --border: rgba(0,0,0,0.09);
+  --text: #0f172a; --text-secondary: #5b6472;
+  --accent: #2563eb; --accent-secondary: #7c3aed;
+  --positive: #059669; --negative: #e11d48; --warning: #b45309;
+  --code-bg: #f4f4f5;
+}
+
+body {
+  font-family: 'Inter', 'Noto Sans KR', -apple-system, BlinkMacSystemFont, 'Segoe UI', sans-serif;
+  background: var(--bg); color: var(--text);
+  line-height: 1.7; -webkit-font-smoothing: antialiased;
+  letter-spacing: -0.011em;
+  transition: background 0.3s, color 0.3s;
+  scrollbar-gutter: stable;
+}
+h1,h2,h3,h4 { color: var(--text); letter-spacing: -0.03em; line-height: 1.15; text-wrap: balance; }
+h1 { font-weight: 800; font-size: clamp(2.6rem, 6vw, 3.9rem); }
+h2 { font-weight: 700; font-size: clamp(1.9rem, 3.4vw, 2.25rem); }
+h3 { font-weight: 650; font-size: 1.5rem; }
+h4 { font-weight: 600; font-size: 1.06rem; }
+p, li, td, th, label, span { font-weight: 400; font-size: 1rem; }
+a { color: var(--accent); text-underline-offset: 3px; }
+.text-secondary { color: var(--text-secondary); }
+
+.wrap { max-width: 1180px; margin: 0 auto; padding: 0 24px; }
+
+/* HERO */
+.hero { padding: 92px 0 52px; border-bottom: 1px solid var(--border); }
+.eyebrow {
+  display: inline-flex; align-items: center; gap: 9px;
+  font-family: 'JetBrains Mono', monospace; font-size: .78rem; font-weight: 600;
+  letter-spacing: .1em; text-transform: uppercase; color: var(--accent);
+  border: 1px solid var(--border); border-radius: 999px;
+  padding: 6px 14px; background: var(--surface); margin-bottom: 22px;
+}
+.eyebrow .dot { width: 7px; height: 7px; border-radius: 50%; background: var(--accent); }
+.lede { font-size: 1.2rem; color: var(--text-secondary); max-width: 62ch; margin-top: 20px; }
+.meta-row { display: flex; flex-wrap: wrap; gap: 10px; margin-top: 28px; }
+.chip {
+  font-family: 'JetBrains Mono', monospace; font-size: .8rem;
+  border: 1px solid var(--border); border-radius: 7px;
+  padding: 6px 11px; background: var(--surface); color: var(--text-secondary);
+}
+.chip b { color: var(--text); font-weight: 600; }
+
+/* LAYOUT */
+.shell { display: grid; grid-template-columns: 214px minmax(0,1fr); gap: 46px; padding: 48px 0 100px; align-items: start; }
+.toc { position: sticky; top: 28px; }
+.toc-title { font-size: .74rem; letter-spacing: .12em; text-transform: uppercase; color: var(--text-secondary); font-weight: 700; margin-bottom: 12px; }
+.toc a {
+  display: block; padding: 7px 12px; border-radius: 7px; font-size: .87rem;
+  color: var(--text-secondary); text-decoration: none; border-left: 2px solid transparent;
+  transition: background .15s, color .15s, border-color .15s;
+}
+.toc a:hover { background: var(--surface-hover); color: var(--text); }
+.toc a.active { color: var(--accent); border-left-color: var(--accent); background: var(--surface); font-weight: 600; }
+
+section { scroll-margin-top: 24px; margin-bottom: 54px; }
+section > h2 { margin-bottom: 8px; }
+.sec-sub { color: var(--text-secondary); margin-bottom: 22px; }
+
+.card {
+  background: var(--surface); border: 1px solid var(--border);
+  border-radius: 10px; padding: 22px 24px;
+  transition: box-shadow .2s ease;
+}
+.card:hover { box-shadow: 0 0 0 1px var(--border), 0 8px 20px rgba(0,0,0,.10); }
+.grid { display: grid; gap: 16px; }
+.g2 { grid-template-columns: repeat(auto-fit, minmax(288px,1fr)); }
+.card h4 { margin-bottom: 8px; }
+.card p + p { margin-top: 10px; }
+.card ul { margin: 8px 0 0 18px; }
+.card li { margin: 5px 0; }
+
+.tag { display:inline-block; font-family:'JetBrains Mono',monospace; font-size:.72rem; font-weight:600;
+  padding: 3px 8px; border-radius: 5px; letter-spacing:.04em; }
+.tag.ok { color: var(--positive); background: color-mix(in srgb, var(--positive) 14%, transparent); }
+.tag.no { color: var(--negative); background: color-mix(in srgb, var(--negative) 14%, transparent); }
+.tag.wa { color: var(--warning); background: color-mix(in srgb, var(--warning) 16%, transparent); }
+.tag.ac { color: var(--accent); background: color-mix(in srgb, var(--accent) 14%, transparent); }
+
+pre {
+  background: var(--code-bg); border: 1px solid var(--border); border-radius: 9px;
+  padding: 16px 18px; overflow-x: auto; margin: 14px 0;
+}
+code { font-family: 'JetBrains Mono', ui-monospace, monospace; font-size: .875rem; }
+p code, li code, td code, th code {
+  background: var(--code-bg); border: 1px solid var(--border);
+  padding: 1px 5px; border-radius: 5px; font-size: .84em;
+}
+pre code { background: none; border: none; padding: 0; color: var(--text); line-height: 1.65; }
+
+.tbl-wrap { overflow-x: auto; border: 1px solid var(--border); border-radius: 10px; margin: 14px 0; }
+table { width: 100%; border-collapse: collapse; min-width: 440px; background: var(--surface); }
+th, td { text-align: left; padding: 11px 15px; border-bottom: 1px solid var(--border); font-size: .93rem; vertical-align: top; }
+th { font-weight: 650; font-size: .78rem; letter-spacing: .07em; text-transform: uppercase; color: var(--text-secondary); background: var(--surface-hover); }
+tr:last-child td { border-bottom: none; }
+
+/* FLOW */
+.flow { display: flex; flex-wrap: wrap; align-items: stretch; gap: 12px; margin: 18px 0; }
+.flow-node {
+  flex: 1 1 190px; background: var(--surface); border: 1px solid var(--border);
+  border-radius: 10px; padding: 16px 18px;
+}
+.flow-node .k { font-family:'JetBrains Mono',monospace; font-size:.72rem; color: var(--accent); font-weight:600; letter-spacing:.08em; }
+.flow-node .v { font-weight: 600; margin-top: 5px; word-break: break-word; }
+.flow-node .d { font-size: .84rem; color: var(--text-secondary); margin-top: 4px; }
+.flow-arrow { display:flex; align-items:center; color: var(--text-secondary); font-size: 1.4rem; }
+@media (max-width: 700px) { .flow-arrow { transform: rotate(90deg); justify-content: center; width: 100%; } }
+
+.steps { counter-reset: s; list-style: none; margin: 0; padding: 0; }
+.steps li { counter-increment: s; position: relative; padding-left: 46px; margin-bottom: 16px; }
+.steps li::before {
+  content: counter(s); position: absolute; left: 0; top: 0;
+  width: 30px; height: 30px; border-radius: 8px;
+  background: var(--surface); border: 1px solid var(--border); color: var(--accent);
+  font-family:'JetBrains Mono',monospace; font-weight: 700; font-size: .85rem;
+  display: flex; align-items: center; justify-content: center;
+}
+.steps li b { display: block; }
+
+.note { border-left: 3px solid var(--accent); background: var(--surface); border-radius: 0 9px 9px 0; padding: 14px 18px; margin: 16px 0; }
+.note.warn { border-left-color: var(--warning); }
+
+.stat-row { display: grid; gap: 14px; grid-template-columns: repeat(auto-fit, minmax(150px,1fr)); margin: 16px 0; }
+.stat { background: var(--surface); border: 1px solid var(--border); border-radius: 10px; padding: 18px 20px; }
+.stat .n { font-size: 2rem; font-weight: 800; letter-spacing: -.04em; color: var(--accent); font-family:'JetBrains Mono',monospace; }
+.stat .l { font-size: .82rem; color: var(--text-secondary); margin-top: 3px; }
+
+footer { border-top: 1px solid var(--border); padding: 30px 0 60px; color: var(--text-secondary); font-size: .88rem; }
+
+/* ANIMATIONS */
+@keyframes fadeInUp { from { opacity:0; transform: translateY(24px);} to { opacity:1; transform:none; } }
+.animate { animation: fadeInUp .6s ease-out both; }
+.animate.delay-1 { animation-delay:.1s } .animate.delay-2 { animation-delay:.2s }
+.animate.delay-3 { animation-delay:.3s } .animate.delay-4 { animation-delay:.4s }
+.reveal { opacity: 0; transform: translateY(24px); transition: opacity .6s ease, transform .6s ease; }
+.reveal.visible { opacity: 1; transform: none; }
+@media (prefers-reduced-motion: reduce) { *, *::before, *::after { animation:none !important; transition:none !important; } .reveal { opacity:1; transform:none; } }
+
+/* MENU */
+.viz-menu { position: fixed; top: 16px; right: 16px; z-index: 9999; }
+.viz-menu-toggle { width:44px; height:44px; border-radius:12px; background:var(--surface); border:1px solid var(--border);
+  color:var(--text); cursor:pointer; display:flex; align-items:center; justify-content:center; backdrop-filter: blur(12px); transition: all .2s; }
+.viz-menu-toggle:hover { background: var(--surface-hover); }
+.viz-menu-dropdown { position:absolute; top:52px; right:0; min-width:200px; background:var(--surface); border:1px solid var(--border);
+  border-radius:12px; padding:8px; opacity:0; visibility:hidden; transform: translateY(-8px); transition: all .2s; backdrop-filter: blur(16px); }
+.viz-menu-dropdown.open { opacity:1; visibility:visible; transform:none; }
+.viz-menu-dropdown button { width:100%; padding:10px 14px; border:none; border-radius:8px; background:transparent; color:var(--text);
+  font-size:14px; font-family:inherit; cursor:pointer; text-align:left; display:flex; align-items:center; gap:10px; transition: background .15s; }
+.viz-menu-dropdown button:hover { background: var(--surface-hover); }
+
+.skip-to-content { position:absolute; top:-40px; left:6px; background:var(--accent); color:#fff; padding:8px 12px;
+  text-decoration:none; border-radius:4px; opacity:0; pointer-events:none; transition: all .2s; z-index:10000; }
+.skip-to-content:focus { top:6px; opacity:1; pointer-events:auto; }
+
+@media (max-width: 900px) {
+  .shell { grid-template-columns: 1fr; gap: 18px; }
+  .toc { position: static; border: 1px solid var(--border); border-radius: 10px; padding: 14px; background: var(--surface); }
+  .toc a { display: inline-block; border-left: none; border-bottom: 2px solid transparent; }
+  .toc a.active { border-left: none; border-bottom-color: var(--accent); }
+}
+
+@media print {
+  body { background:#fff !important; color:#000 !important; }
+  .viz-menu, .toc { display: none !important; }
+  .shell { grid-template-columns: 1fr; }
+  .reveal { opacity:1 !important; transform:none !important; }
+  .card, .tbl-wrap, pre { break-inside: avoid; border: 1px solid #ddd; box-shadow: none; }
+  * { print-color-adjust: exact; -webkit-print-color-adjust: exact; }
+}
+@page { margin: 1in; }
+</style>
+</head>
+<body>
+<a href="#main-content" class="skip-to-content">Skip to content</a>
+
+<div class="viz-menu">
+  <button class="viz-menu-toggle" onclick="toggleMenu()" aria-label="Menu" aria-haspopup="true">
+    <svg width="20" height="20" viewBox="0 0 20 20" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" aria-hidden="true">
+      <line x1="3" y1="5" x2="17" y2="5"/><line x1="3" y1="10" x2="17" y2="10"/><line x1="3" y1="15" x2="17" y2="15"/>
+    </svg>
+  </button>
+  <div class="viz-menu-dropdown" id="vizMenuDropdown" role="menu">
+    <button onclick="cycleTheme()" aria-label="Toggle theme"><span id="themeIcon">D</span><span id="themeLabel">Dark</span></button>
+    <button onclick="downloadImage()" aria-label="Download PNG"><span>PNG</span><span>Download</span></button>
+    <button onclick="window.print()" aria-label="Print or save as PDF"><span>PDF</span><span>Print</span></button>
+  </div>
+</div>
+
+<main id="main-content" role="main">
+  <header class="hero">
+    <div class="wrap">
+      <div class="eyebrow animate"><span class="dot"></span>claudecode plugin &middot; usage example</div>
+      <h1 class="animate delay-1">statusline-setup 사용 결과</h1>
+      <p class="lede animate delay-2">스킬을 실제로 한 번 실행한 기록입니다. 아래의 명령, 경로, 바이트 수, 파일 모드, 출력은 전부 실제 실행 결과입니다.</p>
+      <div class="meta-row animate delay-3"><span class="chip">command <b>install-statusline.sh</b></span><span class="chip">exit <b>0</b></span><span class="chip">installed <b>2 scripts</b></span><span class="chip">dry-run <b>nothing written</b></span></div>
+    </div>
+  </header>
+
+  <div class="wrap">
+    <div class="shell">
+      <nav class="toc" aria-label="Section navigation">
+        <div class="toc-title">Contents</div>
+        <a href="#flow">한 줄 요약</a>
+        <a href="#cmd">1. 실행한 명령</a>
+        <a href="#input">2. 입력</a>
+        <a href="#result">3. 결과</a>
+      </nav>
+      <div>
+<section id="flow" data-reveal>
+
+<h2>한 줄 요약</h2>
+<p class="sec-sub">번들 asset 2개를 받아 설정 디렉터리에 설치하고 statusLine 을 그 경로로 설정합니다</p>
+<div class="flow">
+  <div class="flow-node"><div class="k">INPUT</div><div class="v">assets/*.sh</div><div class="d">statusline-command &middot; statusline-tokens</div></div>
+  <div class="flow-arrow" aria-hidden="true">&#8594;</div>
+  <div class="flow-node"><div class="k">SKILL</div><div class="v">/claudecode:statusline-setup</div><div class="d">install-statusline.sh</div></div>
+  <div class="flow-arrow" aria-hidden="true">&#8594;</div>
+  <div class="flow-node"><div class="k">OUTPUT</div><div class="v">$CFG/*.sh<br>+ settings.json</div><div class="d">statusLine 블록 추가</div></div>
+</div>
+<div class="stat-row">
+  <div class="stat"><div class="n" data-count="0">0</div><div class="l">exit code</div></div>
+  <div class="stat"><div class="n" data-count="2">2</div><div class="l">설치된 스크립트</div></div>
+  <div class="stat"><div class="n" data-count="17162">17162</div><div class="l">statusline-command.sh (bytes)</div></div>
+  <div class="stat"><div class="n" data-count="5576">5576</div><div class="l">statusline-tokens.sh (bytes)</div></div>
+</div>
+
+</section>
+<section id="cmd" data-reveal>
+
+<h2>1. 실행한 명령</h2>
+<p class="sec-sub">dry-run 을 먼저 돌리고 그 다음 실제 설치</p>
+<div class="grid g2">
+  <div class="card"><h4>범용 형식</h4>
+    <pre><code>/claudecode:statusline-setup [--dry-run]
+    [--usage-id ID --usage-api URL] [--budget N]</code></pre></div>
+  <div class="card"><h4>이번 실행</h4>
+    <pre><code>CLAUDE_CONFIG_DIR="$CFG" \
+  sh .../install-statusline.sh --dry-run
+
+CLAUDE_CONFIG_DIR="$CFG" \
+  sh .../install-statusline.sh</code></pre>
+    <p class="text-secondary" style="font-size:.88rem">사용자의 실제 <code>~/.claude</code> 를 건드리지 않도록 격리 검증용 임시 설정 디렉터리 <code>$CFG</code> 를 대상으로 실행했습니다. Bedrock 비용 플래그는 넘기지 않았습니다.</p>
+  </div>
+</div>
+
+</section>
+<section id="input" data-reveal>
+
+<h2>2. 입력</h2>
+<p class="sec-sub">번들 asset 2개와, 앞선 cache-ttl 실행 결과가 남아 있는 settings.json</p>
+<div class="tbl-wrap"><table>
+  <thead><tr><th>입력</th><th>내용</th></tr></thead>
+  <tbody>
+    <tr><td><code>skills/statusline-setup/assets/statusline-command.sh</code></td><td>17162 bytes</td></tr>
+    <tr><td><code>skills/statusline-setup/assets/statusline-tokens.sh</code></td><td>5576 bytes</td></tr>
+    <tr><td><code>$CFG/settings.json</code></td><td><code>model</code> &middot; <code>env</code> (<code>SOME_OTHER_KEY</code>, <code>ENABLE_PROMPT_CACHING_1H</code>) &middot; <code>permissions</code></td></tr>
+  </tbody>
+</table></div>
+
+</section>
+<section id="result" data-reveal>
+
+<h2>3. 결과</h2>
+<p class="sec-sub">dry-run 은 아무것도 쓰지 않았고, 실제 설치는 exit 0</p>
+<div class="card">
+  <h4><span class="tag ac">--dry-run</span> 아무것도 쓰지 않음</h4>
+  <pre><code>would install $CFG/statusline-command.sh (mode 755)
+would install $CFG/statusline-tokens.sh (mode 755)
+would set .statusLine.command = $CFG/statusline-command.sh in $CFG/settings.json
+dry run: nothing written.</code></pre>
+</div>
+<div class="card" style="margin-top:16px">
+  <h4><span class="tag ok">install</span> exit 0</h4>
+  <pre><code>installed $CFG/statusline-command.sh
+installed $CFG/statusline-tokens.sh
+statusLine.command = $CFG/statusline-command.sh
+Restart Claude Code to pick it up.</code></pre>
+</div>
+<div class="tbl-wrap" style="margin-top:18px"><table>
+  <thead><tr><th>결과 파일</th><th>모드</th><th>비고</th></tr></thead>
+  <tbody>
+    <tr><td><code>$CFG/statusline-command.sh</code></td><td><code>-rwxr-xr-x</code></td><td>새로 설치</td></tr>
+    <tr><td><code>$CFG/statusline-tokens.sh</code></td><td><code>-rwxr-xr-x</code></td><td>형제로 나란히 설치</td></tr>
+    <tr><td><code>$CFG/settings.json</code></td><td><code>-rw-------</code></td><td><code>statusLine</code> 블록 추가</td></tr>
+  </tbody>
+</table></div>
+<div class="tbl-wrap" style="margin-top:14px"><table>
+  <thead><tr><th>키</th><th>실행 후</th></tr></thead>
+  <tbody>
+    <tr><td><code>statusLine.type</code></td><td><code>"command"</code> <span class="tag ac">추가</span></td></tr>
+    <tr><td><code>statusLine.command</code></td><td><code>$CFG/statusline-command.sh</code> (절대 경로) <span class="tag ac">추가</span></td></tr>
+    <tr><td><code>model</code> &middot; <code>env</code> &middot; <code>permissions</code></td><td>전부 그대로 <span class="tag ok">보존</span></td></tr>
+  </tbody>
+</table></div>
+<div class="note"><p>산출물: <a href="../skill-guides/statusline-setup.html">statusline-setup 스킬 설명서</a></p></div>
+
+</section>
+      </div>
+    </div>
+  </div>
+</main>
+
+<footer><div class="wrap"><p>dEitY719/claudecode-skills &middot; <code>docs/skill-output/statusline-setup-usage.md</code> 시각화</p></div></footer>
+
+<script>
+function toggleMenu() { var d = document.getElementById('vizMenuDropdown'); if (d) d.classList.toggle('open'); }
+document.addEventListener('click', function(e){ if(!e.target.closest('.viz-menu')){ var d=document.getElementById('vizMenuDropdown'); if(d) d.classList.remove('open'); } });
+document.addEventListener('keydown', function(e){ if(e.key==='Escape'){ var d=document.getElementById('vizMenuDropdown'); if(d) d.classList.remove('open'); } });
+
+var savedTheme = localStorage.getItem('viz-theme');
+var currentTheme = savedTheme || (window.matchMedia('(prefers-color-scheme: light)').matches ? 'light' : 'dark');
+function applyTheme(t) {
+  document.documentElement.className = 'theme-' + t;
+  document.getElementById('themeIcon').textContent = t === 'dark' ? 'D' : 'L';
+  document.getElementById('themeLabel').textContent = t === 'dark' ? 'Dark' : 'Light';
+  localStorage.setItem('viz-theme', t);
+  currentTheme = t;
+}
+function cycleTheme() { applyTheme(currentTheme === 'dark' ? 'light' : 'dark'); }
+applyTheme(currentTheme);
+
+document.querySelectorAll('[data-reveal]').forEach(function(el){ el.classList.add('reveal'); });
+var revealObserver = new IntersectionObserver(function(entries){
+  entries.forEach(function(e){ if(e.isIntersecting){ e.target.classList.add('visible'); revealObserver.unobserve(e.target); } });
+}, { threshold: 0.08 });
+document.querySelectorAll('.reveal').forEach(function(el){ revealObserver.observe(el); });
+
+// TOC scroll-spy: the meaningful interaction beyond the theme toggle
+var tocLinks = Array.prototype.slice.call(document.querySelectorAll('.toc a'));
+var sections = tocLinks.map(function(a){ return document.querySelector(a.getAttribute('href')); }).filter(Boolean);
+function setActive(id) {
+  tocLinks.forEach(function(a){ a.classList.toggle('active', a.getAttribute('href') === '#' + id); });
+}
+var spy = new IntersectionObserver(function(entries){
+  entries.forEach(function(e){ if (e.isIntersecting) setActive(e.target.id); });
+}, { rootMargin: '-10% 0px -70% 0px', threshold: 0 });
+sections.forEach(function(s){ spy.observe(s); });
+if (sections.length) setActive(sections[0].id);
+
+async function downloadImage() {
+  var menu = document.querySelector('.viz-menu');
+  menu.style.display = 'none';
+  try {
+    var url = await htmlToImage.toPng(document.body, { quality: 1, pixelRatio: 2,
+      filter: function(n){ return !n.classList || !n.classList.contains('viz-menu'); } });
+    var a = document.createElement('a'); a.href = url;
+    a.download = document.title.replace(/\s+/g, '-').toLowerCase() + '.png'; a.click();
+  } catch (e) { console.error('Download failed:', e); }
+  menu.style.display = '';
+}
+</script>
+</body>
+</html>

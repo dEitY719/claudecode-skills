@@ -1,0 +1,450 @@
+<!DOCTYPE html>
+<html lang="ko" class="theme-dark">
+<head>
+<meta charset="UTF-8">
+<meta name="viewport" content="width=device-width, initial-scale=1.0">
+<title>statusline-setup — 상태줄 설치 스킬</title>
+<link rel="preconnect" href="https://fonts.googleapis.com">
+<link rel="preconnect" href="https://fonts.gstatic.com" crossorigin>
+<link href="https://fonts.googleapis.com/css2?family=Inter:wght@300;400;500;600;700;800;900&family=Noto+Sans+KR:wght@300;400;500;600;700;800;900&family=JetBrains+Mono:wght@400;600&display=swap" rel="stylesheet">
+<script src="https://cdn.jsdelivr.net/npm/html-to-image@1.11.11/dist/html-to-image.js"></script>
+<style>
+*, *::before, *::after { box-sizing: border-box; margin: 0; padding: 0; }
+:root { interpolate-size: allow-keywords; }
+
+html.theme-dark {
+  --bg: #0A0A0A; --surface: #141414; --surface-hover: #1C1C1C;
+  --border: rgba(255,255,255,0.08);
+  --text: #EDEDED; --text-secondary: #8b8b8b;
+  --accent: #3b82f6; --accent-secondary: #8b5cf6;
+  --positive: #10b981; --negative: #f43f5e; --warning: #f59e0b;
+  --code-bg: #0f0f0f;
+}
+html.theme-light {
+  --bg: #FAFAF9; --surface: #FFFFFF; --surface-hover: #F5F5F4;
+  --border: rgba(0,0,0,0.09);
+  --text: #0f172a; --text-secondary: #5b6472;
+  --accent: #2563eb; --accent-secondary: #7c3aed;
+  --positive: #059669; --negative: #e11d48; --warning: #b45309;
+  --code-bg: #f4f4f5;
+}
+
+body {
+  font-family: 'Inter', 'Noto Sans KR', -apple-system, BlinkMacSystemFont, 'Segoe UI', sans-serif;
+  background: var(--bg); color: var(--text);
+  line-height: 1.7; -webkit-font-smoothing: antialiased;
+  letter-spacing: -0.011em;
+  transition: background 0.3s, color 0.3s;
+  scrollbar-gutter: stable;
+}
+h1,h2,h3,h4 { color: var(--text); letter-spacing: -0.03em; line-height: 1.15; text-wrap: balance; }
+h1 { font-weight: 800; font-size: clamp(2.6rem, 6vw, 3.9rem); }
+h2 { font-weight: 700; font-size: clamp(1.9rem, 3.4vw, 2.25rem); }
+h3 { font-weight: 650; font-size: 1.5rem; }
+h4 { font-weight: 600; font-size: 1.06rem; }
+p, li, td, th, label, span { font-weight: 400; font-size: 1rem; }
+a { color: var(--accent); text-underline-offset: 3px; }
+.text-secondary { color: var(--text-secondary); }
+
+.wrap { max-width: 1180px; margin: 0 auto; padding: 0 24px; }
+
+/* HERO */
+.hero { padding: 92px 0 52px; border-bottom: 1px solid var(--border); }
+.eyebrow {
+  display: inline-flex; align-items: center; gap: 9px;
+  font-family: 'JetBrains Mono', monospace; font-size: .78rem; font-weight: 600;
+  letter-spacing: .1em; text-transform: uppercase; color: var(--accent);
+  border: 1px solid var(--border); border-radius: 999px;
+  padding: 6px 14px; background: var(--surface); margin-bottom: 22px;
+}
+.eyebrow .dot { width: 7px; height: 7px; border-radius: 50%; background: var(--accent); }
+.lede { font-size: 1.2rem; color: var(--text-secondary); max-width: 62ch; margin-top: 20px; }
+.meta-row { display: flex; flex-wrap: wrap; gap: 10px; margin-top: 28px; }
+.chip {
+  font-family: 'JetBrains Mono', monospace; font-size: .8rem;
+  border: 1px solid var(--border); border-radius: 7px;
+  padding: 6px 11px; background: var(--surface); color: var(--text-secondary);
+}
+.chip b { color: var(--text); font-weight: 600; }
+
+/* LAYOUT */
+.shell { display: grid; grid-template-columns: 214px minmax(0,1fr); gap: 46px; padding: 48px 0 100px; align-items: start; }
+.toc { position: sticky; top: 28px; }
+.toc-title { font-size: .74rem; letter-spacing: .12em; text-transform: uppercase; color: var(--text-secondary); font-weight: 700; margin-bottom: 12px; }
+.toc a {
+  display: block; padding: 7px 12px; border-radius: 7px; font-size: .87rem;
+  color: var(--text-secondary); text-decoration: none; border-left: 2px solid transparent;
+  transition: background .15s, color .15s, border-color .15s;
+}
+.toc a:hover { background: var(--surface-hover); color: var(--text); }
+.toc a.active { color: var(--accent); border-left-color: var(--accent); background: var(--surface); font-weight: 600; }
+
+section { scroll-margin-top: 24px; margin-bottom: 54px; }
+section > h2 { margin-bottom: 8px; }
+.sec-sub { color: var(--text-secondary); margin-bottom: 22px; }
+
+.card {
+  background: var(--surface); border: 1px solid var(--border);
+  border-radius: 10px; padding: 22px 24px;
+  transition: box-shadow .2s ease;
+}
+.card:hover { box-shadow: 0 0 0 1px var(--border), 0 8px 20px rgba(0,0,0,.10); }
+.grid { display: grid; gap: 16px; }
+.g2 { grid-template-columns: repeat(auto-fit, minmax(288px,1fr)); }
+.card h4 { margin-bottom: 8px; }
+.card p + p { margin-top: 10px; }
+.card ul { margin: 8px 0 0 18px; }
+.card li { margin: 5px 0; }
+
+.tag { display:inline-block; font-family:'JetBrains Mono',monospace; font-size:.72rem; font-weight:600;
+  padding: 3px 8px; border-radius: 5px; letter-spacing:.04em; }
+.tag.ok { color: var(--positive); background: color-mix(in srgb, var(--positive) 14%, transparent); }
+.tag.no { color: var(--negative); background: color-mix(in srgb, var(--negative) 14%, transparent); }
+.tag.wa { color: var(--warning); background: color-mix(in srgb, var(--warning) 16%, transparent); }
+.tag.ac { color: var(--accent); background: color-mix(in srgb, var(--accent) 14%, transparent); }
+
+pre {
+  background: var(--code-bg); border: 1px solid var(--border); border-radius: 9px;
+  padding: 16px 18px; overflow-x: auto; margin: 14px 0;
+}
+code { font-family: 'JetBrains Mono', ui-monospace, monospace; font-size: .875rem; }
+p code, li code, td code, th code {
+  background: var(--code-bg); border: 1px solid var(--border);
+  padding: 1px 5px; border-radius: 5px; font-size: .84em;
+}
+pre code { background: none; border: none; padding: 0; color: var(--text); line-height: 1.65; }
+
+.tbl-wrap { overflow-x: auto; border: 1px solid var(--border); border-radius: 10px; margin: 14px 0; }
+table { width: 100%; border-collapse: collapse; min-width: 440px; background: var(--surface); }
+th, td { text-align: left; padding: 11px 15px; border-bottom: 1px solid var(--border); font-size: .93rem; vertical-align: top; }
+th { font-weight: 650; font-size: .78rem; letter-spacing: .07em; text-transform: uppercase; color: var(--text-secondary); background: var(--surface-hover); }
+tr:last-child td { border-bottom: none; }
+
+/* FLOW */
+.flow { display: flex; flex-wrap: wrap; align-items: stretch; gap: 12px; margin: 18px 0; }
+.flow-node {
+  flex: 1 1 190px; background: var(--surface); border: 1px solid var(--border);
+  border-radius: 10px; padding: 16px 18px;
+}
+.flow-node .k { font-family:'JetBrains Mono',monospace; font-size:.72rem; color: var(--accent); font-weight:600; letter-spacing:.08em; }
+.flow-node .v { font-weight: 600; margin-top: 5px; word-break: break-word; }
+.flow-node .d { font-size: .84rem; color: var(--text-secondary); margin-top: 4px; }
+.flow-arrow { display:flex; align-items:center; color: var(--text-secondary); font-size: 1.4rem; }
+@media (max-width: 700px) { .flow-arrow { transform: rotate(90deg); justify-content: center; width: 100%; } }
+
+.steps { counter-reset: s; list-style: none; margin: 0; padding: 0; }
+.steps li { counter-increment: s; position: relative; padding-left: 46px; margin-bottom: 16px; }
+.steps li::before {
+  content: counter(s); position: absolute; left: 0; top: 0;
+  width: 30px; height: 30px; border-radius: 8px;
+  background: var(--surface); border: 1px solid var(--border); color: var(--accent);
+  font-family:'JetBrains Mono',monospace; font-weight: 700; font-size: .85rem;
+  display: flex; align-items: center; justify-content: center;
+}
+.steps li b { display: block; }
+
+.note { border-left: 3px solid var(--accent); background: var(--surface); border-radius: 0 9px 9px 0; padding: 14px 18px; margin: 16px 0; }
+.note.warn { border-left-color: var(--warning); }
+
+.stat-row { display: grid; gap: 14px; grid-template-columns: repeat(auto-fit, minmax(150px,1fr)); margin: 16px 0; }
+.stat { background: var(--surface); border: 1px solid var(--border); border-radius: 10px; padding: 18px 20px; }
+.stat .n { font-size: 2rem; font-weight: 800; letter-spacing: -.04em; color: var(--accent); font-family:'JetBrains Mono',monospace; }
+.stat .l { font-size: .82rem; color: var(--text-secondary); margin-top: 3px; }
+
+footer { border-top: 1px solid var(--border); padding: 30px 0 60px; color: var(--text-secondary); font-size: .88rem; }
+
+/* ANIMATIONS */
+@keyframes fadeInUp { from { opacity:0; transform: translateY(24px);} to { opacity:1; transform:none; } }
+.animate { animation: fadeInUp .6s ease-out both; }
+.animate.delay-1 { animation-delay:.1s } .animate.delay-2 { animation-delay:.2s }
+.animate.delay-3 { animation-delay:.3s } .animate.delay-4 { animation-delay:.4s }
+.reveal { opacity: 0; transform: translateY(24px); transition: opacity .6s ease, transform .6s ease; }
+.reveal.visible { opacity: 1; transform: none; }
+@media (prefers-reduced-motion: reduce) { *, *::before, *::after { animation:none !important; transition:none !important; } .reveal { opacity:1; transform:none; } }
+
+/* MENU */
+.viz-menu { position: fixed; top: 16px; right: 16px; z-index: 9999; }
+.viz-menu-toggle { width:44px; height:44px; border-radius:12px; background:var(--surface); border:1px solid var(--border);
+  color:var(--text); cursor:pointer; display:flex; align-items:center; justify-content:center; backdrop-filter: blur(12px); transition: all .2s; }
+.viz-menu-toggle:hover { background: var(--surface-hover); }
+.viz-menu-dropdown { position:absolute; top:52px; right:0; min-width:200px; background:var(--surface); border:1px solid var(--border);
+  border-radius:12px; padding:8px; opacity:0; visibility:hidden; transform: translateY(-8px); transition: all .2s; backdrop-filter: blur(16px); }
+.viz-menu-dropdown.open { opacity:1; visibility:visible; transform:none; }
+.viz-menu-dropdown button { width:100%; padding:10px 14px; border:none; border-radius:8px; background:transparent; color:var(--text);
+  font-size:14px; font-family:inherit; cursor:pointer; text-align:left; display:flex; align-items:center; gap:10px; transition: background .15s; }
+.viz-menu-dropdown button:hover { background: var(--surface-hover); }
+
+.skip-to-content { position:absolute; top:-40px; left:6px; background:var(--accent); color:#fff; padding:8px 12px;
+  text-decoration:none; border-radius:4px; opacity:0; pointer-events:none; transition: all .2s; z-index:10000; }
+.skip-to-content:focus { top:6px; opacity:1; pointer-events:auto; }
+
+@media (max-width: 900px) {
+  .shell { grid-template-columns: 1fr; gap: 18px; }
+  .toc { position: static; border: 1px solid var(--border); border-radius: 10px; padding: 14px; background: var(--surface); }
+  .toc a { display: inline-block; border-left: none; border-bottom: 2px solid transparent; }
+  .toc a.active { border-left: none; border-bottom-color: var(--accent); }
+}
+
+@media print {
+  body { background:#fff !important; color:#000 !important; }
+  .viz-menu, .toc { display: none !important; }
+  .shell { grid-template-columns: 1fr; }
+  .reveal { opacity:1 !important; transform:none !important; }
+  .card, .tbl-wrap, pre { break-inside: avoid; border: 1px solid #ddd; box-shadow: none; }
+  * { print-color-adjust: exact; -webkit-print-color-adjust: exact; }
+}
+@page { margin: 1in; }
+</style>
+</head>
+<body>
+<a href="#main-content" class="skip-to-content">Skip to content</a>
+
+<div class="viz-menu">
+  <button class="viz-menu-toggle" onclick="toggleMenu()" aria-label="Menu" aria-haspopup="true">
+    <svg width="20" height="20" viewBox="0 0 20 20" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" aria-hidden="true">
+      <line x1="3" y1="5" x2="17" y2="5"/><line x1="3" y1="10" x2="17" y2="10"/><line x1="3" y1="15" x2="17" y2="15"/>
+    </svg>
+  </button>
+  <div class="viz-menu-dropdown" id="vizMenuDropdown" role="menu">
+    <button onclick="cycleTheme()" aria-label="Toggle theme"><span id="themeIcon">D</span><span id="themeLabel">Dark</span></button>
+    <button onclick="downloadImage()" aria-label="Download PNG"><span>PNG</span><span>Download</span></button>
+    <button onclick="window.print()" aria-label="Print or save as PDF"><span>PDF</span><span>Print</span></button>
+  </div>
+</div>
+
+<main id="main-content" role="main">
+  <header class="hero">
+    <div class="wrap">
+      <div class="eyebrow animate"><span class="dot"></span>claudecode plugin &middot; skill guide</div>
+      <h1 class="animate delay-1">statusline-setup</h1>
+      <p class="lede animate delay-2">번들 상태줄 스크립트 2개를 Claude 설정 디렉터리에 설치하고, settings.json 의 statusLine 이 그 절대 경로를 가리키게 합니다.</p>
+      <div class="meta-row animate delay-3"><span class="chip">plugin <b>claudecode</b></span><span class="chip">invoke <b>/claudecode:statusline-setup</b></span><span class="chip">writes <b>statusLine + env.CLAUDE_STATUSLINE_*</b></span><span class="chip">requires <b>jq &middot; bash 4.4+</b></span></div>
+    </div>
+  </header>
+
+  <div class="wrap">
+    <div class="shell">
+      <nav class="toc" aria-label="Section navigation">
+        <div class="toc-title">Contents</div>
+        <a href="#summary">한 줄 요약</a>
+        <a href="#when">언제 쓰는가</a>
+        <a href="#invoke">호출 형식</a>
+        <a href="#bedrock">Bedrock 비용 세그먼트</a>
+        <a href="#prereq">선행 조건 / 동작 단계</a>
+        <a href="#safety">안전 계약 / 종료 코드</a>
+        <a href="#snapshot">asset 은 스냅샷</a>
+      </nav>
+      <div>
+<section id="summary" data-reveal>
+
+<h2>한 줄 요약</h2>
+<p class="sec-sub">이 스킬이 만들어 내는 산출물</p>
+<div class="flow">
+  <div class="flow-node"><div class="k">INPUT</div><div class="v">번들 asset 2개</div><div class="d">statusline-command.sh + statusline-tokens.sh</div></div>
+  <div class="flow-arrow" aria-hidden="true">&#8594;</div>
+  <div class="flow-node"><div class="k">SKILL</div><div class="v">/claudecode:statusline-setup</div><div class="d">복사 + chmod +x + jq 병합</div></div>
+  <div class="flow-arrow" aria-hidden="true">&#8594;</div>
+  <div class="flow-node"><div class="k">OUTPUT</div><div class="v">설치된 스크립트 2개<br>+ settings.json</div><div class="d">.statusLine 이 절대 경로를 가리킴</div></div>
+</div>
+<div class="card">
+  <p>플러그인에 동봉된 <code>statusline-command.sh</code> / <code>statusline-tokens.sh</code> 를 Claude 설정 디렉터리에 설치하고,
+  <code>settings.json</code> 의 <code>statusLine</code> 블록이 그 경로를 가리키게 합니다. 나머지 키는 전부 그대로 둡니다.</p>
+</div>
+<div class="stat-row">
+  <div class="stat"><div class="n" data-count="2">2</div><div class="l">설치되는 asset</div></div>
+  <div class="stat"><div class="n" data-count="4">4</div><div class="l">쓰는 settings 키 (statusLine + env 3)</div></div>
+  <div class="stat"><div class="n" data-count="5">5</div><div class="l">종료 코드 종류</div></div>
+  <div class="stat"><div class="n">4.4+</div><div class="l">필요한 bash 버전</div></div>
+</div>
+
+</section>
+<section id="when" data-reveal>
+
+<h2>언제 쓰고 언제 안 쓰는가</h2>
+<p class="sec-sub">형제 스킬과의 경계</p>
+<div class="grid g2">
+  <div class="card">
+    <h4><span class="tag ok">USE</span> 쓸 때</h4>
+    <ul>
+      <li>새 PC 에 상태줄(모델 &middot; git 브랜치 &middot; 컨텍스트/토큰 사용량)을 설치할 때</li>
+      <li>상태줄 스크립트를 번들 버전으로 되돌리고 싶을 때</li>
+    </ul>
+  </div>
+  <div class="card">
+    <h4><span class="tag no">SKIP</span> 쓰지 않을 때</h4>
+    <div class="tbl-wrap"><table>
+      <thead><tr><th>하려는 일</th><th>담당</th></tr></thead>
+      <tbody>
+        <tr><td>상태줄을 처음부터 직접 작성</td><td>이 스킬 아님 &mdash; 번들 스크립트 설치 전용</td></tr>
+        <tr><td>캐시 TTL 변경</td><td><code>/claudecode:cache-ttl</code></td></tr>
+        <tr><td><code>model</code> / <code>permissions</code> 편집</td><td>이 스킬 아님</td></tr>
+      </tbody>
+    </table></div>
+  </div>
+</div>
+
+</section>
+<section id="invoke" data-reveal>
+
+<h2>호출 형식</h2>
+<p class="sec-sub">이미 상태줄을 쓰고 있으면 --dry-run 을 먼저 보여 준 뒤 설치</p>
+<pre><code>/claudecode:statusline-setup --dry-run
+/claudecode:statusline-setup
+/claudecode:statusline-setup help</code></pre>
+<div class="tbl-wrap"><table>
+  <thead><tr><th>인자</th><th>의미</th></tr></thead>
+  <tbody>
+    <tr><td>(없음)</td><td>설치 + <code>settings.json</code> 패치</td></tr>
+    <tr><td><span class="tag ac">--dry-run</span></td><td>무엇을 할지만 출력하고 <b>아무것도 쓰지 않음</b></td></tr>
+    <tr><td><code>--usage-id ID</code></td><td><code>env.CLAUDE_STATUSLINE_USAGE_ID</code> 설정</td></tr>
+    <tr><td><code>--usage-api URL</code></td><td><code>env.CLAUDE_STATUSLINE_USAGE_API</code> 설정</td></tr>
+    <tr><td><code>--budget N</code></td><td><code>env.CLAUDE_STATUSLINE_BUDGET</code> 설정 (양의 정수)</td></tr>
+    <tr><td><code>-h</code> <code>--help</code> <code>help</code></td><td>사용법 출력 후 중단</td></tr>
+  </tbody>
+</table></div>
+
+</section>
+<section id="bedrock" data-reveal>
+
+<h2>Bedrock 비용 세그먼트 설정</h2>
+<p class="sec-sub">스크립트는 절대 스스로 묻지 않습니다 &mdash; 묻는 쪽은 하네스입니다</p>
+<div class="card">
+  <p><b>해당 조건</b> &mdash; <code>~/.dotfiles-setup-mode</code> 가 <code>internal</code> <b>이거나 아예 없고(비어 있고)</b>,
+  <code>settings.json</code> 에 <code>env.CLAUDE_STATUSLINE_USAGE_ID</code> 가 아직 없을 때. 이때 스킬은 사용자에게 usage id 와 usage API URL 을 물어본 뒤 그 값을 위 플래그로 넘겨 설치합니다.</p>
+</div>
+<div class="grid g2" style="margin-top:16px">
+  <div class="card"><h4>파일이 없는 경우를 포함시킨 이유</h4>
+    <p>그 파일은 dotfiles 산출물입니다 &mdash; 이 플러그인만 단독으로 설치한 동료 PC 에는 애초에 없습니다.
+    <code>internal</code> 만 허용하면 그런 PC 는 이유도 모른 채 세그먼트를 영원히 못 켭니다.</p>
+    <p>실제 잠금장치는 두 환경변수 쪽입니다: 설치 시 플래그를 명시적으로 넘긴 사람에게만 값이 생기므로, 설정하지 않은 PC 는 여전히 아무것도 그리지 않고 네트워크 호출도 하지 않습니다.
+    파일에 <code>external</code> 처럼 다른 값이 적혀 있으면 "이 PC 는 대상이 아니다" 라는 명시적 선언이므로 그대로 존중합니다.</p>
+  </div>
+  <div class="card"><h4>왜 셸 rc 가 아니라 settings.json 의 env 인가</h4>
+    <p>Claude Code 가 <code>env</code> 블록을 상태줄 명령의 환경으로 주입하기 때문입니다 &mdash; <code>cache-ttl</code> 스킬이
+    <code>ENABLE_PROMPT_CACHING_1H</code> 에 쓰는 경로와 같습니다.</p>
+    <p>플래그를 생략하면 그 키는 손대지 않습니다. 두 값 중 하나만 넘기면 경고를 출력하되 준 값은 그대로 쓰고 <span class="tag ok">exit 0</span> 입니다 (세그먼트는 둘 다 채워질 때까지 꺼진 상태).</p>
+  </div>
+</div>
+<div class="note warn"><p>스크립트는 비대화형으로 실행되므로 스크립트 안의 <code>read</code> 는 그대로 멈춰 버립니다.
+Claude Code 에서는 <code>AskUserQuestion</code>, ask 도구가 없는 하네스는 답변에 질문을 적고 대기합니다.</p></div>
+
+</section>
+<section id="prereq" data-reveal>
+
+<h2>선행 조건과 동작 단계</h2>
+<p class="sec-sub">동작하지 않을 상태줄을 깔지 않는 것이 먼저</p>
+<div class="grid g2">
+  <div class="card"><h4><code>jq</code></h4><p>없으면 설치 안내 후 <span class="tag wa">exit 3</span>.</p></div>
+  <div class="card"><h4>bash 4.4 이상</h4><p><code>statusline-command.sh</code> 가 연관 배열을 씁니다. macOS 기본 bash 는 3.2 이므로 <code>brew install bash</code> 가 먼저입니다.</p></div>
+</div>
+<ol class="steps" style="margin-top:26px">
+  <li><b>asset 복사</b>번들 asset 2개를 <code>${CLAUDE_CONFIG_DIR:-$HOME/.claude}/</code> 로 복사하고 둘 다 <code>chmod +x</code> (#1751 F-3).</li>
+  <li><b>백업</b>대상 파일이 이미 있고 <b>내용이 다르면</b> <code>&lt;name&gt;.bak</code> 으로 백업한 뒤 교체하고, 백업했다는 사실을 출력합니다. 내용이 같으면 백업하지 않습니다.</li>
+  <li><b>settings.json 패치</b><code>.statusLine</code> 을 <code>{"type":"command","command":"&lt;절대경로&gt;/statusline-command.sh"}</code> 로 설정 (#1751 F-4). 같은 병합에서 플래그로 넘어온 <code>env.CLAUDE_STATUSLINE_*</code> 키도 함께 씁니다.</li>
+</ol>
+<div class="note"><p>두 파일은 반드시 같은 디렉터리에 나란히 있어야 합니다 &mdash;
+<code>statusline-command.sh</code> 가 자신이 resolve 된 경로의 <b>형제</b>로 <code>statusline-tokens.sh</code> 를 source 하기 때문입니다.</p></div>
+<h3 style="margin-top:28px">경로에 <code>~</code> 를 쓰지 않는 이유</h3>
+<p style="margin-top:8px"><code>statusLine.command</code> 에는 이미 확장된 절대 경로(<code>/home/you/.claude/...</code>)를 씁니다.
+Claude Code 가 이 자리의 <code>~</code> 를 안정적으로 확장하지 않기 때문이며, 보기 좋게 <code>~</code> 로 되돌리면 상태줄이 조용히 죽습니다.</p>
+
+</section>
+<section id="safety" data-reveal>
+
+<h2>안전 계약과 종료 코드</h2>
+<p class="sec-sub">cache-ttl 과 동일한 손실 없는 병합 계약</p>
+<div class="grid g2">
+  <div class="card"><h4>손실 없는 병합</h4><p><code>hooks</code>, <code>env</code>, <code>model</code>, <code>permissions</code> 전부 보존. 임시 파일 + <code>mv</code> 라서 <code>jq</code> 실패가 원본을 자르지 못합니다.</p></div>
+  <div class="card"><h4>JSON 이 깨져 있으면</h4><p><code>settings.json.bak</code> 만 남기고 <span class="tag no">exit 4</span> 로 멈춥니다.</p></div>
+  <div class="card"><h4><code>--dry-run</code></h4><p>파일을 하나도 만들지 않습니다 &mdash; <code>settings.json</code> 조차 생성하지 않습니다.</p></div>
+  <div class="card"><h4>독립 실행 (#1751 NF-1)</h4><p>필요한 파일은 전부 스킬 디렉터리 안에 있고, 네트워크도 쓰지 않습니다.</p></div>
+</div>
+<div class="tbl-wrap" style="margin-top:18px"><table>
+  <thead><tr><th>코드</th><th>의미</th><th>올바른 대응</th></tr></thead>
+  <tbody>
+    <tr><td><span class="tag ok">0</span></td><td>성공</td><td>설치 경로와 <code>statusLine.command</code> 보고</td></tr>
+    <tr><td><span class="tag wa">2</span></td><td>알 수 없는 인자, 값 없는 플래그, 양의 정수가 아닌 <code>--budget</code></td><td>호출을 고쳐 재실행 (<code>--help</code> 참고)</td></tr>
+    <tr><td><span class="tag wa">3</span></td><td><code>jq</code> 없음</td><td>설치 안내 전달 후 중단</td></tr>
+    <tr><td><span class="tag no">4</span></td><td><code>settings.json</code> 이 유효한 JSON 이 아님</td><td><code>.bak</code> 저장됨, 아무것도 쓰지 않음</td></tr>
+    <tr><td><span class="tag no">5</span></td><td>번들 asset 누락</td><td>플러그인 설치가 손상됨 &mdash; 재설치</td></tr>
+  </tbody>
+</table></div>
+
+</section>
+<section id="snapshot" data-reveal>
+
+<h2>asset 은 스냅샷입니다 (#1751 Non-Goal)</h2>
+<p class="sec-sub">upstream 을 추적하지 않으며, 그 드리프트는 결함이 아닙니다</p>
+<div class="card">
+  <p><code>skills/statusline-setup/assets/</code> 의 두 파일은 <code>dEitY719/dotfiles</code> 의
+  <code>claude/statusline-{command,tokens}.sh</code> 를 커밋 <code>b23e4d9</code> 시점에 복사한 것입니다.</p>
+  <p>재번들은 의도적인 수작업입니다 &mdash; 두 파일을 다시 복사하고 아래 변경 1건을 다시 적용한 뒤
+  <code>CLAUDE.md</code> 와 <code>SKILL.md</code> 의 커밋 SHA 를 갱신하고 <code>tests/run.sh</code> 를 다시 돌립니다.</p>
+</div>
+<div class="grid g2" style="margin-top:16px">
+  <div class="card"><h4><span class="tag ok">동일</span> statusline-tokens.sh</h4><p>원본과 바이트 단위로 동일합니다.</p></div>
+  <div class="card"><h4><span class="tag wa">1곳 다름</span> statusline-command.sh</h4>
+    <p>원본의 Bedrock 비용 세그먼트는 조직 내부 사용자 id 와 usage API 호스트를 하드코딩하는데, 이 저장소는 공개입니다.
+    번들 사본은 두 값을 <code>CLAUDE_STATUSLINE_USAGE_ID</code> / <code>CLAUDE_STATUSLINE_USAGE_API</code> 에서 읽고
+    (예산은 선택적 <code>CLAUDE_STATUSLINE_BUDGET</code>, 기본 175), 둘 다 설정돼 있지 않으면 세그먼트 자체를 건너뜁니다.</p>
+  </div>
+</div>
+<div class="note warn"><p><b>재번들 때마다 이 변경을 다시 적용하세요.</b> 그 블록 외에는 asset 을 손으로 고치지 마세요.</p></div>
+
+</section>
+      </div>
+    </div>
+  </div>
+</main>
+
+<footer><div class="wrap"><p>dEitY719/claudecode-skills &middot; <code>docs/skill-guides/statusline-setup.md</code> 시각화 &middot; 실행 예시는 <a href="../skill-output/statusline-setup-usage.html">statusline-setup 사용 결과</a></p></div></footer>
+
+<script>
+function toggleMenu() { var d = document.getElementById('vizMenuDropdown'); if (d) d.classList.toggle('open'); }
+document.addEventListener('click', function(e){ if(!e.target.closest('.viz-menu')){ var d=document.getElementById('vizMenuDropdown'); if(d) d.classList.remove('open'); } });
+document.addEventListener('keydown', function(e){ if(e.key==='Escape'){ var d=document.getElementById('vizMenuDropdown'); if(d) d.classList.remove('open'); } });
+
+var savedTheme = localStorage.getItem('viz-theme');
+var currentTheme = savedTheme || (window.matchMedia('(prefers-color-scheme: light)').matches ? 'light' : 'dark');
+function applyTheme(t) {
+  document.documentElement.className = 'theme-' + t;
+  document.getElementById('themeIcon').textContent = t === 'dark' ? 'D' : 'L';
+  document.getElementById('themeLabel').textContent = t === 'dark' ? 'Dark' : 'Light';
+  localStorage.setItem('viz-theme', t);
+  currentTheme = t;
+}
+function cycleTheme() { applyTheme(currentTheme === 'dark' ? 'light' : 'dark'); }
+applyTheme(currentTheme);
+
+document.querySelectorAll('[data-reveal]').forEach(function(el){ el.classList.add('reveal'); });
+var revealObserver = new IntersectionObserver(function(entries){
+  entries.forEach(function(e){ if(e.isIntersecting){ e.target.classList.add('visible'); revealObserver.unobserve(e.target); } });
+}, { threshold: 0.08 });
+document.querySelectorAll('.reveal').forEach(function(el){ revealObserver.observe(el); });
+
+// TOC scroll-spy: the meaningful interaction beyond the theme toggle
+var tocLinks = Array.prototype.slice.call(document.querySelectorAll('.toc a'));
+var sections = tocLinks.map(function(a){ return document.querySelector(a.getAttribute('href')); }).filter(Boolean);
+function setActive(id) {
+  tocLinks.forEach(function(a){ a.classList.toggle('active', a.getAttribute('href') === '#' + id); });
+}
+var spy = new IntersectionObserver(function(entries){
+  entries.forEach(function(e){ if (e.isIntersecting) setActive(e.target.id); });
+}, { rootMargin: '-10% 0px -70% 0px', threshold: 0 });
+sections.forEach(function(s){ spy.observe(s); });
+if (sections.length) setActive(sections[0].id);
+
+async function downloadImage() {
+  var menu = document.querySelector('.viz-menu');
+  menu.style.display = 'none';
+  try {
+    var url = await htmlToImage.toPng(document.body, { quality: 1, pixelRatio: 2,
+      filter: function(n){ return !n.classList || !n.classList.contains('viz-menu'); } });
+    var a = document.createElement('a'); a.href = url;
+    a.download = document.title.replace(/\s+/g, '-').toLowerCase() + '.png'; a.click();
+  } catch (e) { console.error('Download failed:', e); }
+  menu.style.display = '';
+}
+</script>
+</body>
+</html>

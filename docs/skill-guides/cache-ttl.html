@@ -1,0 +1,403 @@
+<!DOCTYPE html>
+<html lang="ko" class="theme-dark">
+<head>
+<meta charset="UTF-8">
+<meta name="viewport" content="width=device-width, initial-scale=1.0">
+<title>cache-ttl — 프롬프트 캐시 TTL 전환 스킬</title>
+<link rel="preconnect" href="https://fonts.googleapis.com">
+<link rel="preconnect" href="https://fonts.gstatic.com" crossorigin>
+<link href="https://fonts.googleapis.com/css2?family=Inter:wght@300;400;500;600;700;800;900&family=Noto+Sans+KR:wght@300;400;500;600;700;800;900&family=JetBrains+Mono:wght@400;600&display=swap" rel="stylesheet">
+<script src="https://cdn.jsdelivr.net/npm/html-to-image@1.11.11/dist/html-to-image.js"></script>
+<style>
+*, *::before, *::after { box-sizing: border-box; margin: 0; padding: 0; }
+:root { interpolate-size: allow-keywords; }
+
+html.theme-dark {
+  --bg: #0A0A0A; --surface: #141414; --surface-hover: #1C1C1C;
+  --border: rgba(255,255,255,0.08);
+  --text: #EDEDED; --text-secondary: #8b8b8b;
+  --accent: #3b82f6; --accent-secondary: #8b5cf6;
+  --positive: #10b981; --negative: #f43f5e; --warning: #f59e0b;
+  --code-bg: #0f0f0f;
+}
+html.theme-light {
+  --bg: #FAFAF9; --surface: #FFFFFF; --surface-hover: #F5F5F4;
+  --border: rgba(0,0,0,0.09);
+  --text: #0f172a; --text-secondary: #5b6472;
+  --accent: #2563eb; --accent-secondary: #7c3aed;
+  --positive: #059669; --negative: #e11d48; --warning: #b45309;
+  --code-bg: #f4f4f5;
+}
+
+body {
+  font-family: 'Inter', 'Noto Sans KR', -apple-system, BlinkMacSystemFont, 'Segoe UI', sans-serif;
+  background: var(--bg); color: var(--text);
+  line-height: 1.7; -webkit-font-smoothing: antialiased;
+  letter-spacing: -0.011em;
+  transition: background 0.3s, color 0.3s;
+  scrollbar-gutter: stable;
+}
+h1,h2,h3,h4 { color: var(--text); letter-spacing: -0.03em; line-height: 1.15; text-wrap: balance; }
+h1 { font-weight: 800; font-size: clamp(2.6rem, 6vw, 3.9rem); }
+h2 { font-weight: 700; font-size: clamp(1.9rem, 3.4vw, 2.25rem); }
+h3 { font-weight: 650; font-size: 1.5rem; }
+h4 { font-weight: 600; font-size: 1.06rem; }
+p, li, td, th, label, span { font-weight: 400; font-size: 1rem; }
+a { color: var(--accent); text-underline-offset: 3px; }
+.text-secondary { color: var(--text-secondary); }
+
+.wrap { max-width: 1180px; margin: 0 auto; padding: 0 24px; }
+
+/* HERO */
+.hero { padding: 92px 0 52px; border-bottom: 1px solid var(--border); }
+.eyebrow {
+  display: inline-flex; align-items: center; gap: 9px;
+  font-family: 'JetBrains Mono', monospace; font-size: .78rem; font-weight: 600;
+  letter-spacing: .1em; text-transform: uppercase; color: var(--accent);
+  border: 1px solid var(--border); border-radius: 999px;
+  padding: 6px 14px; background: var(--surface); margin-bottom: 22px;
+}
+.eyebrow .dot { width: 7px; height: 7px; border-radius: 50%; background: var(--accent); }
+.lede { font-size: 1.2rem; color: var(--text-secondary); max-width: 62ch; margin-top: 20px; }
+.meta-row { display: flex; flex-wrap: wrap; gap: 10px; margin-top: 28px; }
+.chip {
+  font-family: 'JetBrains Mono', monospace; font-size: .8rem;
+  border: 1px solid var(--border); border-radius: 7px;
+  padding: 6px 11px; background: var(--surface); color: var(--text-secondary);
+}
+.chip b { color: var(--text); font-weight: 600; }
+
+/* LAYOUT */
+.shell { display: grid; grid-template-columns: 214px minmax(0,1fr); gap: 46px; padding: 48px 0 100px; align-items: start; }
+.toc { position: sticky; top: 28px; }
+.toc-title { font-size: .74rem; letter-spacing: .12em; text-transform: uppercase; color: var(--text-secondary); font-weight: 700; margin-bottom: 12px; }
+.toc a {
+  display: block; padding: 7px 12px; border-radius: 7px; font-size: .87rem;
+  color: var(--text-secondary); text-decoration: none; border-left: 2px solid transparent;
+  transition: background .15s, color .15s, border-color .15s;
+}
+.toc a:hover { background: var(--surface-hover); color: var(--text); }
+.toc a.active { color: var(--accent); border-left-color: var(--accent); background: var(--surface); font-weight: 600; }
+
+section { scroll-margin-top: 24px; margin-bottom: 54px; }
+section > h2 { margin-bottom: 8px; }
+.sec-sub { color: var(--text-secondary); margin-bottom: 22px; }
+
+.card {
+  background: var(--surface); border: 1px solid var(--border);
+  border-radius: 10px; padding: 22px 24px;
+  transition: box-shadow .2s ease;
+}
+.card:hover { box-shadow: 0 0 0 1px var(--border), 0 8px 20px rgba(0,0,0,.10); }
+.grid { display: grid; gap: 16px; }
+.g2 { grid-template-columns: repeat(auto-fit, minmax(288px,1fr)); }
+.card h4 { margin-bottom: 8px; }
+.card p + p { margin-top: 10px; }
+.card ul { margin: 8px 0 0 18px; }
+.card li { margin: 5px 0; }
+
+.tag { display:inline-block; font-family:'JetBrains Mono',monospace; font-size:.72rem; font-weight:600;
+  padding: 3px 8px; border-radius: 5px; letter-spacing:.04em; }
+.tag.ok { color: var(--positive); background: color-mix(in srgb, var(--positive) 14%, transparent); }
+.tag.no { color: var(--negative); background: color-mix(in srgb, var(--negative) 14%, transparent); }
+.tag.wa { color: var(--warning); background: color-mix(in srgb, var(--warning) 16%, transparent); }
+.tag.ac { color: var(--accent); background: color-mix(in srgb, var(--accent) 14%, transparent); }
+
+pre {
+  background: var(--code-bg); border: 1px solid var(--border); border-radius: 9px;
+  padding: 16px 18px; overflow-x: auto; margin: 14px 0;
+}
+code { font-family: 'JetBrains Mono', ui-monospace, monospace; font-size: .875rem; }
+p code, li code, td code, th code {
+  background: var(--code-bg); border: 1px solid var(--border);
+  padding: 1px 5px; border-radius: 5px; font-size: .84em;
+}
+pre code { background: none; border: none; padding: 0; color: var(--text); line-height: 1.65; }
+
+.tbl-wrap { overflow-x: auto; border: 1px solid var(--border); border-radius: 10px; margin: 14px 0; }
+table { width: 100%; border-collapse: collapse; min-width: 440px; background: var(--surface); }
+th, td { text-align: left; padding: 11px 15px; border-bottom: 1px solid var(--border); font-size: .93rem; vertical-align: top; }
+th { font-weight: 650; font-size: .78rem; letter-spacing: .07em; text-transform: uppercase; color: var(--text-secondary); background: var(--surface-hover); }
+tr:last-child td { border-bottom: none; }
+
+/* FLOW */
+.flow { display: flex; flex-wrap: wrap; align-items: stretch; gap: 12px; margin: 18px 0; }
+.flow-node {
+  flex: 1 1 190px; background: var(--surface); border: 1px solid var(--border);
+  border-radius: 10px; padding: 16px 18px;
+}
+.flow-node .k { font-family:'JetBrains Mono',monospace; font-size:.72rem; color: var(--accent); font-weight:600; letter-spacing:.08em; }
+.flow-node .v { font-weight: 600; margin-top: 5px; word-break: break-word; }
+.flow-node .d { font-size: .84rem; color: var(--text-secondary); margin-top: 4px; }
+.flow-arrow { display:flex; align-items:center; color: var(--text-secondary); font-size: 1.4rem; }
+@media (max-width: 700px) { .flow-arrow { transform: rotate(90deg); justify-content: center; width: 100%; } }
+
+.steps { counter-reset: s; list-style: none; margin: 0; padding: 0; }
+.steps li { counter-increment: s; position: relative; padding-left: 46px; margin-bottom: 16px; }
+.steps li::before {
+  content: counter(s); position: absolute; left: 0; top: 0;
+  width: 30px; height: 30px; border-radius: 8px;
+  background: var(--surface); border: 1px solid var(--border); color: var(--accent);
+  font-family:'JetBrains Mono',monospace; font-weight: 700; font-size: .85rem;
+  display: flex; align-items: center; justify-content: center;
+}
+.steps li b { display: block; }
+
+.note { border-left: 3px solid var(--accent); background: var(--surface); border-radius: 0 9px 9px 0; padding: 14px 18px; margin: 16px 0; }
+.note.warn { border-left-color: var(--warning); }
+
+.stat-row { display: grid; gap: 14px; grid-template-columns: repeat(auto-fit, minmax(150px,1fr)); margin: 16px 0; }
+.stat { background: var(--surface); border: 1px solid var(--border); border-radius: 10px; padding: 18px 20px; }
+.stat .n { font-size: 2rem; font-weight: 800; letter-spacing: -.04em; color: var(--accent); font-family:'JetBrains Mono',monospace; }
+.stat .l { font-size: .82rem; color: var(--text-secondary); margin-top: 3px; }
+
+footer { border-top: 1px solid var(--border); padding: 30px 0 60px; color: var(--text-secondary); font-size: .88rem; }
+
+/* ANIMATIONS */
+@keyframes fadeInUp { from { opacity:0; transform: translateY(24px);} to { opacity:1; transform:none; } }
+.animate { animation: fadeInUp .6s ease-out both; }
+.animate.delay-1 { animation-delay:.1s } .animate.delay-2 { animation-delay:.2s }
+.animate.delay-3 { animation-delay:.3s } .animate.delay-4 { animation-delay:.4s }
+.reveal { opacity: 0; transform: translateY(24px); transition: opacity .6s ease, transform .6s ease; }
+.reveal.visible { opacity: 1; transform: none; }
+@media (prefers-reduced-motion: reduce) { *, *::before, *::after { animation:none !important; transition:none !important; } .reveal { opacity:1; transform:none; } }
+
+/* MENU */
+.viz-menu { position: fixed; top: 16px; right: 16px; z-index: 9999; }
+.viz-menu-toggle { width:44px; height:44px; border-radius:12px; background:var(--surface); border:1px solid var(--border);
+  color:var(--text); cursor:pointer; display:flex; align-items:center; justify-content:center; backdrop-filter: blur(12px); transition: all .2s; }
+.viz-menu-toggle:hover { background: var(--surface-hover); }
+.viz-menu-dropdown { position:absolute; top:52px; right:0; min-width:200px; background:var(--surface); border:1px solid var(--border);
+  border-radius:12px; padding:8px; opacity:0; visibility:hidden; transform: translateY(-8px); transition: all .2s; backdrop-filter: blur(16px); }
+.viz-menu-dropdown.open { opacity:1; visibility:visible; transform:none; }
+.viz-menu-dropdown button { width:100%; padding:10px 14px; border:none; border-radius:8px; background:transparent; color:var(--text);
+  font-size:14px; font-family:inherit; cursor:pointer; text-align:left; display:flex; align-items:center; gap:10px; transition: background .15s; }
+.viz-menu-dropdown button:hover { background: var(--surface-hover); }
+
+.skip-to-content { position:absolute; top:-40px; left:6px; background:var(--accent); color:#fff; padding:8px 12px;
+  text-decoration:none; border-radius:4px; opacity:0; pointer-events:none; transition: all .2s; z-index:10000; }
+.skip-to-content:focus { top:6px; opacity:1; pointer-events:auto; }
+
+@media (max-width: 900px) {
+  .shell { grid-template-columns: 1fr; gap: 18px; }
+  .toc { position: static; border: 1px solid var(--border); border-radius: 10px; padding: 14px; background: var(--surface); }
+  .toc a { display: inline-block; border-left: none; border-bottom: 2px solid transparent; }
+  .toc a.active { border-left: none; border-bottom-color: var(--accent); }
+}
+
+@media print {
+  body { background:#fff !important; color:#000 !important; }
+  .viz-menu, .toc { display: none !important; }
+  .shell { grid-template-columns: 1fr; }
+  .reveal { opacity:1 !important; transform:none !important; }
+  .card, .tbl-wrap, pre { break-inside: avoid; border: 1px solid #ddd; box-shadow: none; }
+  * { print-color-adjust: exact; -webkit-print-color-adjust: exact; }
+}
+@page { margin: 1in; }
+</style>
+</head>
+<body>
+<a href="#main-content" class="skip-to-content">Skip to content</a>
+
+<div class="viz-menu">
+  <button class="viz-menu-toggle" onclick="toggleMenu()" aria-label="Menu" aria-haspopup="true">
+    <svg width="20" height="20" viewBox="0 0 20 20" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" aria-hidden="true">
+      <line x1="3" y1="5" x2="17" y2="5"/><line x1="3" y1="10" x2="17" y2="10"/><line x1="3" y1="15" x2="17" y2="15"/>
+    </svg>
+  </button>
+  <div class="viz-menu-dropdown" id="vizMenuDropdown" role="menu">
+    <button onclick="cycleTheme()" aria-label="Toggle theme"><span id="themeIcon">D</span><span id="themeLabel">Dark</span></button>
+    <button onclick="downloadImage()" aria-label="Download PNG"><span>PNG</span><span>Download</span></button>
+    <button onclick="window.print()" aria-label="Print or save as PDF"><span>PDF</span><span>Print</span></button>
+  </div>
+</div>
+
+<main id="main-content" role="main">
+  <header class="hero">
+    <div class="wrap">
+      <div class="eyebrow animate"><span class="dot"></span>claudecode plugin &middot; skill guide</div>
+      <h1 class="animate delay-1">cache-ttl</h1>
+      <p class="lede animate delay-2">Claude Code 의 프롬프트 캐시 TTL 을 5분과 1시간 사이에서 전환합니다. settings.json 의 env 키 하나만 건드리고, 나머지는 전부 그대로 둡니다.</p>
+      <div class="meta-row animate delay-3"><span class="chip">plugin <b>claudecode</b></span><span class="chip">invoke <b>/claudecode:cache-ttl</b></span><span class="chip">writes <b>env.ENABLE_PROMPT_CACHING_1H</b></span><span class="chip">requires <b>jq</b></span></div>
+    </div>
+  </header>
+
+  <div class="wrap">
+    <div class="shell">
+      <nav class="toc" aria-label="Section navigation">
+        <div class="toc-title">Contents</div>
+        <a href="#summary">한 줄 요약</a>
+        <a href="#when">언제 쓰는가</a>
+        <a href="#invoke">호출 형식</a>
+        <a href="#steps">동작 단계</a>
+        <a href="#safety">안전 계약</a>
+        <a href="#exits">종료 코드</a>
+      </nav>
+      <div>
+<section id="summary" data-reveal>
+
+<h2>한 줄 요약</h2>
+<p class="sec-sub">이 스킬이 만들어 내는 산출물</p>
+<div class="flow">
+  <div class="flow-node"><div class="k">INPUT</div><div class="v">settings.json</div><div class="d">기존 Claude Code 설정 파일</div></div>
+  <div class="flow-arrow" aria-hidden="true">&#8594;</div>
+  <div class="flow-node"><div class="k">SKILL</div><div class="v">/claudecode:cache-ttl</div><div class="d">번들 POSIX sh 스크립트 1개 실행</div></div>
+  <div class="flow-arrow" aria-hidden="true">&#8594;</div>
+  <div class="flow-node"><div class="k">OUTPUT</div><div class="v">settings.json</div><div class="d">env 키 1개만 바뀐 같은 파일</div></div>
+</div>
+<div class="card">
+  <p>Claude Code 의 프롬프트 캐시 TTL 을 <b>5분 기본값</b>과 <b>1시간</b> 사이에서 전환합니다.
+  <code>settings.json</code> 의 <code>env.ENABLE_PROMPT_CACHING_1H</code> 키 <b>하나만</b> 건드리고, 나머지 키는 전부 그대로 둡니다.</p>
+</div>
+<div class="stat-row">
+  <div class="stat"><div class="n" data-count="1">1</div><div class="l">건드리는 키 개수</div></div>
+  <div class="stat"><div class="n" data-count="2">2</div><div class="l">인자 값 (1h / 5m)</div></div>
+  <div class="stat"><div class="n" data-count="4">4</div><div class="l">종료 코드 종류</div></div>
+  <div class="stat"><div class="n">0</div><div class="l">외부 의존 (jq 제외)</div></div>
+</div>
+
+</section>
+<section id="when" data-reveal>
+
+<h2>언제 쓰고 언제 안 쓰는가</h2>
+<p class="sec-sub">형제 스킬과의 경계</p>
+<div class="grid g2">
+  <div class="card">
+    <h4><span class="tag ok">USE</span> 쓸 때</h4>
+    <ul>
+      <li>긴 세션에서 같은 컨텍스트를 반복해서 읽히고 있어 캐시 수명을 늘리고 싶을 때</li>
+      <li>1시간 캐시를 켜 뒀다가 기본값으로 되돌리고 싶을 때</li>
+    </ul>
+  </div>
+  <div class="card">
+    <h4><span class="tag no">SKIP</span> 쓰지 않을 때</h4>
+    <div class="tbl-wrap"><table>
+      <thead><tr><th>하려는 일</th><th>담당</th></tr></thead>
+      <tbody>
+        <tr><td>모델 변경</td><td><code>/model</code></td></tr>
+        <tr><td>상태줄 설치</td><td><code>/claudecode:statusline-setup</code></td></tr>
+        <tr><td><code>permissions</code> / <code>hooks</code> 편집</td><td>이 스킬 아님 &mdash; 직접 편집하거나 <code>/config</code></td></tr>
+      </tbody>
+    </table></div>
+  </div>
+</div>
+
+</section>
+<section id="invoke" data-reveal>
+
+<h2>호출 형식</h2>
+<p class="sec-sub">인자는 두 값뿐이고, 생략하면 5m</p>
+<pre><code>/claudecode:cache-ttl 1h
+/claudecode:cache-ttl 5m
+/claudecode:cache-ttl          # 인자 없으면 5m
+/claudecode:cache-ttl help</code></pre>
+<div class="tbl-wrap"><table>
+  <thead><tr><th>인자</th><th>의미</th></tr></thead>
+  <tbody>
+    <tr><td><span class="tag ac">1h</span></td><td><code>.env.ENABLE_PROMPT_CACHING_1H = "1"</code></td></tr>
+    <tr><td><span class="tag ac">5m</span></td><td>그 키를 <b>삭제</b>. 삭제 후 <code>.env</code> 가 비면 <code>.env</code> 자체도 제거</td></tr>
+    <tr><td>(없음)</td><td><code>5m</code> 과 동일</td></tr>
+    <tr><td><code>-h</code> <code>--help</code> <code>help</code></td><td>사용법 출력 후 중단</td></tr>
+  </tbody>
+</table></div>
+
+</section>
+<section id="steps" data-reveal>
+
+<h2>동작 단계</h2>
+<p class="sec-sub">모델이 jq 를 직접 타이핑하지 않는 것이 핵심</p>
+<ol class="steps">
+  <li><b>모드 결정</b>사용자가 "1시간" / "1h" / "길게" 라고 하면 <code>1h</code>, "5분" / "기본값" / "꺼줘" 면 <code>5m</code>. 애매하면 <b>묻습니다</b>. 추측하지 않습니다.</li>
+  <li><b>스크립트 실행</b><code>skills/cache-ttl/scripts/set-cache-ttl.sh &lt;mode&gt;</code></li>
+  <li><b>보고</b>스크립트가 출력한 before &#8594; after 줄을 그대로 전달하고, "Claude Code 재시작 후 적용" 한 문장을 덧붙입니다.</li>
+</ol>
+<h3 style="margin-top:28px">대상 파일과 멀티 계정</h3>
+<p style="margin-top:8px">대상은 <code>${CLAUDE_CONFIG_DIR:-$HOME/.claude}/settings.json</code> 입니다 (#1751 F-5). 계정이 여러 개면 호출 전에 변수를 지정합니다.</p>
+<pre><code>CLAUDE_CONFIG_DIR=~/.claude-work1 \
+  sh skills/cache-ttl/scripts/set-cache-ttl.sh 1h</code></pre>
+
+</section>
+<section id="safety" data-reveal>
+
+<h2>안전 계약 / 주의사항</h2>
+<p class="sec-sub">깨진 JSON 을 건드리지 않는 것이 기능입니다</p>
+<div class="grid g2">
+  <div class="card"><h4>손실 없는 병합</h4><p><code>hooks</code>, <code>model</code>, <code>statusLine</code>, <code>permissions</code>, 그리고 <code>.env</code> 안의 다른 키까지 전부 보존됩니다. <code>jq</code> 결과를 대상 디렉터리의 임시 파일에 쓴 뒤 <code>mv</code> 하므로, <code>jq</code> 가 실패해도 원본이 잘리지 않습니다.</p></div>
+  <div class="card"><h4>settings.json 이 없으면</h4><p><code>{}</code> 골격을 만든 뒤 패치합니다.</p></div>
+  <div class="card"><h4>JSON 이 깨져 있으면</h4><p><code>settings.json.bak</code> 으로 복사만 하고 <span class="tag no">exit 4</span> 로 멈춥니다. 깨진 JSON 을 덮어쓰는 일은 절대 없습니다.</p></div>
+  <div class="card"><h4>독립 실행 (#1751 NF-1)</h4><p><code>dEitY719/dotfiles</code> 를 한 번도 클론하지 않은 PC 에서도 그대로 동작합니다. POSIX sh + <code>jq</code> 외에 아무것도 요구하지 않고, 스킬 디렉터리 바깥의 어떤 경로도 참조하지 않습니다.</p></div>
+</div>
+<div class="note warn"><p><code>sed</code> / <code>python -c</code> 로 우회하지 않습니다. 스크립트가 거부하면 그대로 멈추는 것이 올바른 동작입니다.</p></div>
+
+</section>
+<section id="exits" data-reveal>
+
+<h2>종료 코드</h2>
+<p class="sec-sub">코드를 읽고 대응하되, 우회하지 않습니다</p>
+<div class="tbl-wrap"><table>
+  <thead><tr><th>코드</th><th>의미</th><th>올바른 대응</th></tr></thead>
+  <tbody>
+    <tr><td><span class="tag ok">0</span></td><td>성공</td><td>before &#8594; after 보고</td></tr>
+    <tr><td><span class="tag wa">2</span></td><td>인자가 <code>1h</code>/<code>5m</code> 이 아님</td><td>모드를 다시 정하고 재실행</td></tr>
+    <tr><td><span class="tag wa">3</span></td><td><code>jq</code> 없음</td><td>스크립트가 출력한 설치 안내를 전달하고 중단</td></tr>
+    <tr><td><span class="tag no">4</span></td><td><code>settings.json</code> 이 유효한 JSON 이 아님</td><td><code>.bak</code> 이 저장됐고 아무것도 쓰지 않았음을 알림</td></tr>
+  </tbody>
+</table></div>
+
+</section>
+      </div>
+    </div>
+  </div>
+</main>
+
+<footer><div class="wrap"><p>dEitY719/claudecode-skills &middot; <code>docs/skill-guides/cache-ttl.md</code> 시각화 &middot; 실행 예시는 <a href="../skill-output/cache-ttl-usage.html">cache-ttl 사용 결과</a></p></div></footer>
+
+<script>
+function toggleMenu() { var d = document.getElementById('vizMenuDropdown'); if (d) d.classList.toggle('open'); }
+document.addEventListener('click', function(e){ if(!e.target.closest('.viz-menu')){ var d=document.getElementById('vizMenuDropdown'); if(d) d.classList.remove('open'); } });
+document.addEventListener('keydown', function(e){ if(e.key==='Escape'){ var d=document.getElementById('vizMenuDropdown'); if(d) d.classList.remove('open'); } });
+
+var savedTheme = localStorage.getItem('viz-theme');
+var currentTheme = savedTheme || (window.matchMedia('(prefers-color-scheme: light)').matches ? 'light' : 'dark');
+function applyTheme(t) {
+  document.documentElement.className = 'theme-' + t;
+  document.getElementById('themeIcon').textContent = t === 'dark' ? 'D' : 'L';
+  document.getElementById('themeLabel').textContent = t === 'dark' ? 'Dark' : 'Light';
+  localStorage.setItem('viz-theme', t);
+  currentTheme = t;
+}
+function cycleTheme() { applyTheme(currentTheme === 'dark' ? 'light' : 'dark'); }
+applyTheme(currentTheme);
+
+document.querySelectorAll('[data-reveal]').forEach(function(el){ el.classList.add('reveal'); });
+var revealObserver = new IntersectionObserver(function(entries){
+  entries.forEach(function(e){ if(e.isIntersecting){ e.target.classList.add('visible'); revealObserver.unobserve(e.target); } });
+}, { threshold: 0.08 });
+document.querySelectorAll('.reveal').forEach(function(el){ revealObserver.observe(el); });
+
+// TOC scroll-spy: the meaningful interaction beyond the theme toggle
+var tocLinks = Array.prototype.slice.call(document.querySelectorAll('.toc a'));
+var sections = tocLinks.map(function(a){ return document.querySelector(a.getAttribute('href')); }).filter(Boolean);
+function setActive(id) {
+  tocLinks.forEach(function(a){ a.classList.toggle('active', a.getAttribute('href') === '#' + id); });
+}
+var spy = new IntersectionObserver(function(entries){
+  entries.forEach(function(e){ if (e.isIntersecting) setActive(e.target.id); });
+}, { rootMargin: '-10% 0px -70% 0px', threshold: 0 });
+sections.forEach(function(s){ spy.observe(s); });
+if (sections.length) setActive(sections[0].id);
+
+async function downloadImage() {
+  var menu = document.querySelector('.viz-menu');
+  menu.style.display = 'none';
+  try {
+    var url = await htmlToImage.toPng(document.body, { quality: 1, pixelRatio: 2,
+      filter: function(n){ return !n.classList || !n.classList.contains('viz-menu'); } });
+    var a = document.createElement('a'); a.href = url;
+    a.download = document.title.replace(/\s+/g, '-').toLowerCase() + '.png'; a.click();
+  } catch (e) { console.error('Download failed:', e); }
+  menu.style.display = '';
+}
+</script>
+</body>
+</html>

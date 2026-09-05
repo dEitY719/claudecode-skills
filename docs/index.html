@@ -48,7 +48,7 @@
     .card code.inv { display: block; font-size: 12.5px; color: var(--text-secondary);
                      margin: 2px 0 9px; background: none; border: none; padding: 0; }
     .card p { font-size: 14.5px; margin: 0; }
-    .card .links { margin-top: 12px; padding-top: 12px; border-top: 1px solid var(--border); }
+    .card .links { margin-top: 12px; padding-top: 12px; border-top: 1px solid var(--border); display: flex; gap: 18px; }
     .card .links a { font-size: 13.5px; font-weight: 600; color: var(--accent); text-decoration: none; }
     .card .links a:hover { text-decoration: underline; }
     footer.site { margin-top: 52px; padding-top: 20px; border-top: 1px solid var(--border);
@@ -75,13 +75,13 @@
           <h3>cache-ttl</h3>
           <code class="inv">/claudecode:cache-ttl [1h|5m]</code>
           <p><code>env.ENABLE_PROMPT_CACHING_1H</code> 를 뒤집어 프롬프트 캐시 수명을 1시간으로 늘리거나 기본 5분으로 되돌립니다. <code>5m</code> 은 키를 지우고, 그 결과 <code>.env</code> 가 비면 <code>.env</code> 까지 제거합니다.</p>
-          <div class="links"><a href="skill-guides/cache-ttl.md">설명서</a></div>
+          <div class="links"><a href="skill-guides/cache-ttl.html">설명서</a> <a href="skill-output/cache-ttl-usage.html">실행 예시</a></div>
         </article>
         <article class="card">
           <h3>statusline-setup</h3>
           <code class="inv">/claudecode:statusline-setup [--dry-run] [--usage-id ID --usage-api URL] [--budget N]</code>
           <p>번들된 <code>statusline-command.sh</code> 와 <code>statusline-tokens.sh</code> 를 Claude 설정 디렉터리에 설치하고 <code>.statusLine</code> 을 그 절대 경로로 설정합니다. 기존 파일이 다르면 <code>.bak</code> 부터 남깁니다. bash 4.4+ 필요.</p>
-          <div class="links"><a href="skill-guides/statusline-setup.md">설명서</a></div>
+          <div class="links"><a href="skill-guides/statusline-setup.html">설명서</a> <a href="skill-output/statusline-setup-usage.html">실행 예시</a></div>
         </article>
       </div>
     </section>
@@ -111,7 +111,7 @@
 
     <footer class="site">
       소스: <a href="https://github.com/dEitY719/claudecode-skills">dEitY719/claudecode-skills</a> &middot;
-      설명서는 <code>docs/skill-guides/</code> 의 Markdown 원본입니다 (HTML 렌더본 없음).
+      설명서는 <code>docs/skill-guides/</code>, 실행 예시는 <code>docs/skill-output/</code> &mdash; 각각 Markdown 원본과 HTML 렌더본이 나란히 있습니다.
     </footer>
   </main>
 </body>

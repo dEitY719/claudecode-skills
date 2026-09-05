@@ -18,16 +18,12 @@ Everything they need ships inside the plugin. A machine that has never cloned
 Both target `${CLAUDE_CONFIG_DIR:-$HOME/.claude}`, so a multi-account setup
 configures each account by exporting that variable before the call.
 
-### Guides (GitHub Pages)
+### Visual guides and worked examples (GitHub Pages)
 
 Landing page: <https://deity719.github.io/claudecode-skills/>
 
-- `cache-ttl` — [guide](docs/skill-guides/cache-ttl.md)
-- `statusline-setup` — [guide](docs/skill-guides/statusline-setup.md)
-
-The guides are **Markdown-only for now** — there are no rendered HTML twins and
-no `docs/skill-output/` worked examples, unlike the sibling repos. Only
-`docs/index.html` is HTML; the guides render on GitHub.
+- `cache-ttl` — [visual guide](https://deity719.github.io/claudecode-skills/skill-guides/cache-ttl.html) · [usage example](https://deity719.github.io/claudecode-skills/skill-output/cache-ttl-usage.html) (settings.json to settings.json, one env key)
+- `statusline-setup` — [visual guide](https://deity719.github.io/claudecode-skills/skill-guides/statusline-setup.html) · [usage example](https://deity719.github.io/claudecode-skills/skill-output/statusline-setup-usage.html) (bundled assets to installed status line)
 
 ## Safety contract
 
