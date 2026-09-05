@@ -32,6 +32,21 @@ No skill may reference a path outside its own directory at runtime, source a
 output is plain `printf`. If you find yourself adding a dependency to make a
 script prettier, you are breaking NF-1.
 
+**A `SKILL.md` invokes its bundled script through `${CLAUDE_PLUGIN_ROOT:-.}`**,
+never by a repo-relative path:
+
+```
+sh "${CLAUDE_PLUGIN_ROOT:-.}/skills/cache-ttl/scripts/set-cache-ttl.sh" 1h
+```
+
+Installed from the marketplace the skill lives under the plugin root while the
+working directory is the user's own project, so a bare
+`sh skills/<name>/scripts/<x>.sh` resolves against that project and fails with
+`No such file or directory`. The `:-.` fallback leaves a maintainer running
+from a checkout unaffected. This applies to `--help` routes too — a path
+relative to the skill directory is no more resolvable than one relative to the
+repo root.
+
 ## The statusline assets are a snapshot, not a link
 
 `skills/statusline-setup/assets/statusline-{command,tokens}.sh` are a

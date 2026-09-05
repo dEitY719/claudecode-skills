@@ -8,6 +8,7 @@ description: >-
   settings key.
 compatibility:
   tools: Bash, Read
+  network: optional
 metadata:
   model_recommendation:
     tier: haiku
@@ -19,13 +20,12 @@ metadata:
 # Status Line Installer
 
 Copies two bundled scripts into the Claude config dir and sets `statusLine`
-(plus, on request, three `env` keys) in `settings.json`. Everything else in that
-file is preserved.
+(plus, on request, three `env` keys) in `settings.json`, preserving every other key.
 
 ## Help
 
 If the argument is `-h`, `--help`, or `help`, run
-`scripts/install-statusline.sh --help` and print its output verbatim, then stop.
+`sh "${CLAUDE_PLUGIN_ROOT:-.}/skills/statusline-setup/scripts/install-statusline.sh" --help` and print its output verbatim, then stop.
 
 ## Step 1: Check the prerequisites
 
@@ -36,21 +36,21 @@ If the argument is `-h`, `--help`, or `help`, run
 
 ## Step 2: Ask for the Bedrock cost values, if this machine needs them
 
-Only when `~/.dotfiles-setup-mode` reads `internal` **or is absent/empty** and
-`.env.CLAUDE_STATUSLINE_USAGE_ID` is absent from
-`${CLAUDE_CONFIG_DIR:-$HOME/.claude}/settings.json`: ask the user for the usage
-id and the usage-API URL (and a budget, if not the default 175), then pass them
-as flags in Step 3. Otherwise skip this step.
+Only when `~/.dotfiles-setup-mode` reads `internal` **or the user asked for the
+cost segment**, and `.env.CLAUDE_STATUSLINE_USAGE_ID` is absent from
+`${CLAUDE_CONFIG_DIR:-$HOME/.claude}/settings.json`: ask for the usage id, the
+usage-API URL and a budget if not the default 175, then pass them as flags in
+Step 3. An absent or empty file means this machine has no dotfiles — skip this
+step silently and install with no cost segment.
 
-**You** ask — the script never prompts. It runs non-interactively, so a `read`
-in it would hang. In Claude Code use `AskUserQuestion`; a harness with no ask
-tool stops and asks in its reply, then waits for the answer.
+**You** ask — the script never prompts (non-interactive: a `read` would hang).
+In Claude Code use `AskUserQuestion`; another harness asks in its reply, waits.
 
 ## Step 3: Preview, then install
 
 ```
-sh skills/statusline-setup/scripts/install-statusline.sh --dry-run
-sh skills/statusline-setup/scripts/install-statusline.sh \
+sh "${CLAUDE_PLUGIN_ROOT:-.}/skills/statusline-setup/scripts/install-statusline.sh" --dry-run
+sh "${CLAUDE_PLUGIN_ROOT:-.}/skills/statusline-setup/scripts/install-statusline.sh" \
     --usage-id ID --usage-api URL [--budget N]
 ```
 
@@ -88,7 +88,8 @@ the script echoed, and say the status line appears after Claude Code restarts.
 - Touches `statusLine` and the three `CLAUDE_STATUSLINE_*` keys under `env`,
   nothing else. Never edit `model`, `hooks`, `permissions`, or another `env`
   entry from this skill.
-- Self-contained: no dotfiles checkout, no network, no file outside this skill.
+- Self-contained: no dotfiles checkout, no file outside this skill; the status
+  line calls the usage API only when `--usage-id` and `--usage-api` were given.
 - The assets are a **point-in-time snapshot** of `dEitY719/dotfiles` (commit
   `b23e4d9`) carrying one sanctioned deviation, and they do not track upstream.
   Never patch a copied asset in place. Full rules, and why the cost segment
@@ -96,5 +97,4 @@ the script echoed, and say the status line appears after Claude Code restarts.
 
 ## Related Skills
 
-`claudecode:cache-ttl` edits the same `settings.json` with the same lossless
-merge.
+`claudecode:cache-ttl` edits the same `settings.json` with the same lossless merge.
