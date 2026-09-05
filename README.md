@@ -182,8 +182,8 @@ values when the machine needs them and `install-statusline.sh --usage-id ID
 merge it uses for `statusLine`. An omitted flag leaves that key untouched.
 
 This repo answers dotfiles #1751. It is a sibling of `authoring-skills`,
-`harness-skills`, and the other split-out plugin repos from the dotfiles
-#1410 migration.
+`harness-skills`, and the other split-out plugin repos from the
+dotfiles #1410 migration.
 
 ## License
 
