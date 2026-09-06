@@ -30,16 +30,16 @@ follow it, then stop.
 ## Step 1: Check the prerequisites
 
 - `jq` on PATH — the script exits 3 with an install hint otherwise.
-- **bash 4.4 or newer** — `statusline-command.sh` uses associative arrays; macOS
-  ships bash 3.2, so tell the user to `brew install bash` before installing.
+- **bash 4.4+** — `statusline-command.sh` uses associative arrays under `#!/bin/bash`;
+  check `/bin/bash --version`. macOS ships 3.2 and `brew install bash` cannot change that.
 
 ## Step 2: Ask for the Bedrock cost values, if this machine needs them
 
 Only when **the user asked for the cost segment** or `~/.dotfiles-setup-mode`
 reads `internal`, and `.env.CLAUDE_STATUSLINE_USAGE_ID` is absent from
 `${CLAUDE_CONFIG_DIR:-$HOME/.claude}/settings.json`: ask for the usage id, the
-usage-API URL, and a budget if not the default 175. Otherwise skip this step
-silently and install with no cost segment.
+usage-API URL, and a budget if not 175. Otherwise skip silently — omitted flags
+leave any usage keys already in `settings.json`, and the cost segment, untouched.
 
 **You** ask — the script never prompts (a `read` would hang); pass the answers as Step 3 flags.
 
