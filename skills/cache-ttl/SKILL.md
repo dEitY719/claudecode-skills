@@ -1,10 +1,10 @@
 ---
 name: cache-ttl
 description: >-
-  Flip Claude Code's prompt-cache TTL between 5m and 1h by patching
+  Flip Claude Code's prompt-cache TTL between 5m and 1h via
   env.ENABLE_PROMPT_CACHING_1H in settings.json. Use on "프롬프트 캐시 1시간으로",
   "cache TTL 5분으로 되돌려", "/claudecode:cache-ttl". Other settings.json keys:
-  `update-config`. Model: `/model`.
+  the built-in `update-config`. Model: `/model`.
 license: MIT
 compatibility:
   tools: Bash, Read
