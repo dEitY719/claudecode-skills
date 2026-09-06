@@ -1,11 +1,10 @@
 ---
 name: statusline-setup
 description: >-
-  Install the bundled Claude Code status line — model, git branch, context and
-  token usage — into the Claude config dir and point settings.json's statusLine
-  at it. Use on "상태줄 설치해줘", "statusline 세팅", "/claudecode:statusline-setup".
-  Do NOT use to write a custom status line from scratch, or to edit any other
-  settings key.
+  Install this repo's bundled Claude Code status line (model, branch, context,
+  tokens) and set settings.json's statusLine. Use on "상태줄 설치해줘",
+  "statusline 세팅", "/claudecode:statusline-setup". Custom status lines: the
+  built-in `statusline-setup` agent.
 license: MIT
 compatibility:
   tools: Bash, Read
@@ -25,27 +24,24 @@ Copies two bundled scripts into the Claude config dir and sets `statusLine`
 
 ## Help
 
-If the argument is `-h`, `--help`, or `help`, run
-`sh "${CLAUDE_PLUGIN_ROOT:-.}/skills/statusline-setup/scripts/install-statusline.sh" --help` and print its output verbatim, then stop.
+If the argument is `-h`, `--help`, or `help`, read `references/help.md` and
+follow it, then stop.
 
 ## Step 1: Check the prerequisites
 
 - `jq` on PATH — the script exits 3 with an install hint otherwise.
-- **bash 4.4 or newer** — `statusline-command.sh` uses associative arrays.
-  Check with `bash --version`. macOS ships bash 3.2; tell the user to
-  `brew install bash` rather than installing a status line that will not run.
+- **bash 4.4 or newer** — `statusline-command.sh` uses associative arrays; macOS
+  ships bash 3.2, so tell the user to `brew install bash` before installing.
 
 ## Step 2: Ask for the Bedrock cost values, if this machine needs them
 
 Only when **the user asked for the cost segment** or `~/.dotfiles-setup-mode`
-reads `internal` — and `.env.CLAUDE_STATUSLINE_USAGE_ID` is absent from
+reads `internal`, and `.env.CLAUDE_STATUSLINE_USAGE_ID` is absent from
 `${CLAUDE_CONFIG_DIR:-$HOME/.claude}/settings.json`: ask for the usage id, the
-usage-API URL and a budget if not the default 175, then pass them as flags in
-Step 3. An absent or empty file means this machine has no dotfiles — skip this
-step silently and install with no cost segment.
+usage-API URL, and a budget if not the default 175. Otherwise skip this step
+silently and install with no cost segment.
 
-**You** ask — the script never prompts (non-interactive: a `read` would hang).
-In Claude Code use `AskUserQuestion`; a harness without one asks in its reply and waits.
+**You** ask — the script never prompts (a `read` would hang); pass the answers as Step 3 flags.
 
 ## Step 3: Preview, then install
 
@@ -55,25 +51,30 @@ sh "${CLAUDE_PLUGIN_ROOT:-.}/skills/statusline-setup/scripts/install-statusline.
     [--usage-id ID --usage-api URL] [--budget N]   # flags only if Step 2 asked
 ```
 
+| Option | Description | Default |
+|---|---|---|
+| `--dry-run` | print what would happen, write nothing | off |
+| `--usage-id ID` | set `env.CLAUDE_STATUSLINE_USAGE_ID` | unset — key left as-is |
+| `--usage-api URL` | set `env.CLAUDE_STATUSLINE_USAGE_API` | unset — key left as-is |
+| `--budget N` | set `env.CLAUDE_STATUSLINE_BUDGET`, positive integer | 175 |
+
 Run `--dry-run` first with the same flags — a bare one hides the `env` keys —
-and show that output before writing. Target is `${CLAUDE_CONFIG_DIR:-$HOME/.claude}`,
-so a multi-account setup installs per account by exporting `CLAUDE_CONFIG_DIR`
-first. Do **not** hand-write `jq` against `settings.json` or copy the assets yourself.
+and show that output before writing. Target is `${CLAUDE_CONFIG_DIR:-$HOME/.claude}`;
+export it to install per account. Never hand-write `jq` or copy the assets yourself.
 
 ## Step 4: Report
 
-Print the resulting `statusLine.command` and any `env.CLAUDE_STATUSLINE_*` line
-the script echoed, and say the status line appears after Claude Code restarts.
+On exit 0, prefix `[OK]` to the script's own output and relay it verbatim:
 
-## What the script does
+```
+[OK] statusLine.command = /home/you/.claude/statusline-command.sh
+env.CLAUDE_STATUSLINE_USAGE_ID = <id>
+file: /home/you/.claude/settings.json
+Restart Claude Code to pick it up.
+```
 
-- copies both assets side by side and `chmod +x` them, backing up a differing
-  destination as `<name>.bak` first — `statusline-command.sh` sources the tokens
-  helper as a sibling of its own resolved path, so they cannot be separated
-- writes `.statusLine` (absolute path: Claude Code does not reliably expand `~`
-  there) plus whichever `env.CLAUDE_STATUSLINE_*` flag was passed, in one
-  read-to-temp + `mv` so a `jq` failure cannot truncate the file
-- an omitted flag leaves that key alone; only one usage flag warns and exits 0
+An `env.*` line appears only for a key that is set. On a non-zero exit print
+`[FAIL] exit=<n>` and relay stderr verbatim. Internals: `references/behaviour.md`.
 
 ## Failure modes — read the exit, do not work around it
 
@@ -91,9 +92,8 @@ the script echoed, and say the status line appears after Claude Code restarts.
 - Self-contained: no dotfiles checkout, no file outside this skill; the status
   line calls the usage API only when `--usage-id` and `--usage-api` were given.
 - The assets are a **point-in-time snapshot** of `dEitY719/dotfiles` (commit
-  `b23e4d9`) carrying one sanctioned deviation, and they do not track upstream.
-  Never patch a copied asset in place. Full rules, and why the cost segment
-  reads its id and host from `env`: `references/re-bundling.md`.
+  `b23e4d9`) with one sanctioned deviation; they do not track upstream. Never
+  patch a copied asset in place. Full rules: `references/re-bundling.md`.
 
 ## Related Skills
 
