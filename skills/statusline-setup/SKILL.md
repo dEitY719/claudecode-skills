@@ -56,7 +56,7 @@ sh "${CLAUDE_PLUGIN_ROOT:-.}/skills/statusline-setup/scripts/install-statusline.
 | `--dry-run` | print what would happen, write nothing | off |
 | `--usage-id ID` | set `env.CLAUDE_STATUSLINE_USAGE_ID` | unset — key left as-is |
 | `--usage-api URL` | set `env.CLAUDE_STATUSLINE_USAGE_API` | unset — key left as-is |
-| `--budget N` | set `env.CLAUDE_STATUSLINE_BUDGET`, positive integer | 175 |
+| `--budget N` | set `env.CLAUDE_STATUSLINE_BUDGET`, positive integer | unset — key left as-is; the status line renders 175 |
 
 Run `--dry-run` first with the same flags — a bare one hides the `env` keys —
 and show that output before writing. Target is `${CLAUDE_CONFIG_DIR:-$HOME/.claude}`;
