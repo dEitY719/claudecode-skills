@@ -110,7 +110,7 @@ Manifests live at the repo root and all point at one flat `skills/` directory:
 ```
 .
 ├── skills/
-│   ├── cache-ttl/{SKILL.md, scripts/set-cache-ttl.sh}
+│   ├── cache-ttl/{SKILL.md, scripts/, references/}
 │   └── statusline-setup/{SKILL.md, scripts/, assets/, references/}
 ├── tests/run.sh                                    POSIX-sh, no framework
 ├── .claude-plugin/{marketplace,plugin}.json        Claude Code

@@ -1,10 +1,10 @@
 ---
 name: cache-ttl
 description: >-
-  Flip Claude Code's prompt-cache TTL between 5 minutes and 1 hour by patching
+  Flip Claude Code's prompt-cache TTL between 5m and 1h by patching
   env.ENABLE_PROMPT_CACHING_1H in settings.json. Use on "프롬프트 캐시 1시간으로",
-  "cache TTL 5분으로 되돌려", "/claudecode:cache-ttl". Do NOT use to edit any
-  other setting, or to change the model (that is `/model`).
+  "cache TTL 5분으로 되돌려", "/claudecode:cache-ttl". Other settings.json keys:
+  `update-config`. Model: `/model`.
 license: MIT
 compatibility:
   tools: Bash, Read
@@ -22,9 +22,8 @@ Writes one key in `settings.json`. Everything else in that file is preserved.
 
 ## Help
 
-If the argument is `-h`, `--help`, or `help`, run
-`sh "${CLAUDE_PLUGIN_ROOT:-.}/skills/cache-ttl/scripts/set-cache-ttl.sh" --help`
-and print its output verbatim, then stop.
+If the argument is `-h`, `--help`, or `help`, read `references/help.md` and
+follow it, then stop.
 
 ## Step 1: Pick the mode
 
@@ -41,17 +40,30 @@ sh "${CLAUDE_PLUGIN_ROOT:-.}/skills/cache-ttl/scripts/set-cache-ttl.sh" 1h
 sh "${CLAUDE_PLUGIN_ROOT:-.}/skills/cache-ttl/scripts/set-cache-ttl.sh" 5m
 ```
 
-No argument means `5m`. The script targets
-`${CLAUDE_CONFIG_DIR:-$HOME/.claude}/settings.json`, so a multi-account setup
-switches accounts by exporting `CLAUDE_CONFIG_DIR` before the call.
+| Option | Description | Default |
+|---|---|---|
+| `1h` | set `env.ENABLE_PROMPT_CACHING_1H` to `"1"` | — |
+| `5m` | delete the key (5-minute default cache) | yes — used when no argument is given |
+
+The script targets `${CLAUDE_CONFIG_DIR:-$HOME/.claude}/settings.json`, so a
+multi-account setup switches accounts by exporting `CLAUDE_CONFIG_DIR` before
+the call.
 
 Do **not** hand-write `jq` or `sed` against `settings.json` instead. The script
 is the contract; a one-off edit is how an unrelated key gets dropped.
 
 ## Step 3: Report
 
-Print the script's before -> after line as-is and add one sentence: the change
-takes effect after Claude Code restarts.
+On exit 0, print `[OK]` followed by the script's own three lines verbatim:
+
+```
+[OK] cache TTL: 5m -> 1h  (env.ENABLE_PROMPT_CACHING_1H: (unset) -> 1)
+file: /home/you/.claude/settings.json
+Restart Claude Code to pick it up.
+```
+
+On any non-zero exit, print `[FAIL] exit=<n>` and relay the script's stderr
+verbatim, then stop — see Failure modes.
 
 ## What the script does
 
@@ -67,10 +79,7 @@ takes effect after Claude Code restarts.
 |---|---|---|
 | 2 | argument was neither `1h` nor `5m` | re-read Step 1 and re-run |
 | 3 | `jq` not on PATH | relay the install hint the script printed; stop |
-| 4 | `settings.json` is not valid JSON | a `.bak` copy was saved and nothing was written; tell the user to fix the JSON |
-
-Never fall back to `sed`, `python -c`, or a hand-written rewrite when the
-script refuses. Refusing to touch broken JSON is the feature.
+| 4 | `settings.json` is not valid JSON | a `.bak` copy was saved and nothing was written; refusing to touch broken JSON is the feature, not a bug — tell the user to fix the JSON, never rewrite it with `sed` or `python -c` |
 
 ## Constraints
 
