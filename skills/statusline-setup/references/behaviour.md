@@ -11,8 +11,8 @@ only explains what it already does, so nothing here is a second procedure.
   expand `~` there — plus whichever `env.CLAUDE_STATUSLINE_*` flag was passed,
   in one read-to-temp + `mv` so a `jq` failure cannot truncate `settings.json`.
 - An omitted flag leaves that key exactly as it is; a value already present is
-  never cleared. Passing only one of `--usage-id` / `--usage-api` warns and
-  still exits 0, because the counterpart may already be in `settings.json`.
+  never cleared. Passing only one of `--usage-id` / `--usage-api` still exits 0,
+  and warns only when the counterpart is not already in `settings.json`.
 - Prints `statusLine.command`, one `env.<KEY> = <value>` line per key that is
   set, the settings file path, and the restart reminder. Step 4 prefixes `[OK]`
   to that output; it does not reformat it.
