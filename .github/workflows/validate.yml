@@ -27,3 +27,13 @@ jobs:
       # emoji gate would break the snapshot contract. Nothing else in this
       # repo may carry one. See CLAUDE.md -> "Emojis".
       allow-emoji-paths: skills/statusline-setup/assets/
+
+  # Post-merge patch bump, owned by harness-skills: on a push to main that
+  # changed shipped content, bump X.Y.Z -> X.Y.(Z+1) in every manifest and push
+  # the commit. Needs write access, which only this caller can grant.
+  version-bump:
+    if: github.event_name == 'push'
+    needs: validate
+    permissions:
+      contents: write
+    uses: dEitY719/harness-skills/.github/workflows/version-bump.yml@main
