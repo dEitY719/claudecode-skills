@@ -1,9 +1,9 @@
 # statusline-setup — help
 
-Run
+Paste the locator block from `references/run-script.md`, then run
 
 ```
-sh "${CLAUDE_PLUGIN_ROOT:-.}/skills/statusline-setup/scripts/install-statusline.sh" --help
+sh "$_SL" --help
 ```
 
 and print its output verbatim, then stop.

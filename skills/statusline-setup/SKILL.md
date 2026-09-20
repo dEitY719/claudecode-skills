@@ -45,10 +45,11 @@ leave any usage keys already in `settings.json`, and the cost segment, untouched
 
 ## Step 3: Preview, then install
 
+Paste the locator block from `references/run-script.md` (the only place this skill spells the path), then:
+
 ```
-sh "${CLAUDE_PLUGIN_ROOT:-.}/skills/statusline-setup/scripts/install-statusline.sh" --dry-run
-sh "${CLAUDE_PLUGIN_ROOT:-.}/skills/statusline-setup/scripts/install-statusline.sh" \
-    [--usage-id ID --usage-api URL] [--budget N]   # flags only if Step 2 asked
+sh "$_SL" --dry-run                                      # then, to install:
+sh "$_SL" [--usage-id ID --usage-api URL] [--budget N]   # flags only if Step 2 asked
 ```
 
 | Option | Description | Default |
@@ -58,9 +59,8 @@ sh "${CLAUDE_PLUGIN_ROOT:-.}/skills/statusline-setup/scripts/install-statusline.
 | `--usage-api URL` | set `env.CLAUDE_STATUSLINE_USAGE_API` | unset — key left as-is |
 | `--budget N` | set `env.CLAUDE_STATUSLINE_BUDGET`, positive integer | unset — key left as-is; the status line renders 175 |
 
-Run `--dry-run` first with the same flags — a bare one hides the `env` keys —
-and show that output before writing. Target is `${CLAUDE_CONFIG_DIR:-$HOME/.claude}`;
-export it to install per account. Never hand-write `jq` or copy the assets yourself.
+Run `--dry-run` first with the same flags — a bare one hides the `env` keys — and show that output before writing.
+Target is `${CLAUDE_CONFIG_DIR:-$HOME/.claude}`; export it per account. Never hand-write `jq` or copy the assets.
 
 ## Step 4: Report
 

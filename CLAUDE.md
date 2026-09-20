@@ -32,21 +32,35 @@ No skill may reference a path outside its own directory at runtime, source a
 output is plain `printf`. If you find yourself adding a dependency to make a
 script prettier, you are breaking NF-1.
 
-**A `SKILL.md` invokes its bundled script through `${CLAUDE_PLUGIN_ROOT:-.}`**,
-never by a repo-relative path:
-
-```
-sh "${CLAUDE_PLUGIN_ROOT:-.}/skills/cache-ttl/scripts/set-cache-ttl.sh" 1h
-```
+**A `SKILL.md` locates its bundled script through a guarded
+`$CLAUDE_PLUGIN_ROOT`**, never by a repo-relative path and never through a
+default spliced into the path. Each skill's `references/run-script.md` holds
+the block and is the only place that skill spells its script path; `SKILL.md`
+and `references/help.md` both paste it. `--help` routes included.
 
 Installed from the marketplace the skill lives under the plugin root while the
 working directory is the user's own project, so a bare
 `sh skills/<name>/scripts/<x>.sh` resolves against that project and fails.
-`--help` routes included.
 
-Only Claude Code sets `CLAUDE_PLUGIN_ROOT`. The Codex, Gemini, Kimi, Hermes and
-OpenCode packagings this repo also ships fall through to `:-.`, so a bundled
-script must stay runnable from the repo root.
+**There is no cwd fallback.** A `:-.` default on `$CLAUDE_PLUGIN_ROOT` splices
+the *current working directory* into the path when the variable is unset, and that
+tier was retired for the whole family by `harness-skills#22`: `$PWD` is
+caller-controlled, and these skills run inside whatever project the user is
+standing in. A guarded `[ -n "${CLAUDE_PLUGIN_ROOT:-}" ]` plus an `-r` proof
+replaces it, and an unresolved root stops with a message naming the way out.
+`tests/run.sh` fails if the shape comes back — including from this page, which
+is why the rule above is worded rather than spelled out. The ladder and its
+reasoning live in
+[`harness-skills/references/plugin-root.md`](https://github.com/dEitY719/harness-skills/blob/main/references/plugin-root.md).
+
+Only Claude Code sets `CLAUDE_PLUGIN_ROOT` for you. On the Codex, Gemini, Kimi,
+Hermes and OpenCode packagings this repo also ships, **the agent exports it**
+from the directory it read the `SKILL.md` out of — that path is always known,
+because reading the skill is how the run started. That is the contract, not a
+workaround: falling through to the cwd only ever worked when the user happened
+to be standing in this repo, and silently ran something else when they were
+not. A bundled script stays runnable from the repo root by being invoked
+directly, which is what `tests/run.sh` does.
 
 ## The statusline assets are a snapshot, not a link
 

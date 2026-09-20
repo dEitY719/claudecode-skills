@@ -211,4 +211,32 @@ grep -q 'SETUP_MODE" = "internal" \] || \[ -z "$SETUP_MODE"' "$asset" ||
     fail "$t" "the widened gate is gone — a re-bundle probably overwrote it"
 pass "$t"
 
+# --- retired tier 4: no cwd default spliced into a path (issue #10) --------
+# `harness-skills#22` retired the `:-.` default on $CLAUDE_PLUGIN_ROOT for the
+# whole family, and `harness-skills#59` is moving this gate into the shared
+# skill-check.yml. Until it lands, this is the local copy; after it lands, this
+# is the check that fails first, in one repo, instead of fifteen at once.
+#
+# Two things about how it is written.
+#
+# The pattern is ASSEMBLED, never spelled: a guard that quotes the shape it
+# bans matches itself, reports its own text, and can never go green. Every
+# piece below is a regex fragment, and the one literal character sequence that
+# would match is never adjacent in this file.
+#
+# And the search runs inside $repo. `git ls-files` answers repo-relative
+# paths, so grepping them from the caller's cwd silently reads whatever
+# checkout the caller happens to be standing in — which is how a sibling
+# repo's version of this guard once reported pre-fix text as current.
+t="no retired tier-4 cwd default in any tracked file"
+_open='\$\{'
+_name='[A-Za-z_][A-Za-z0-9_]*'
+_def=':?-'
+# shellcheck disable=SC2016  # regex fragments, assembled so this file cannot match itself
+_cwd='(\$PWD|\$\(pwd\)|'"$(printf '\\%s' '.')"')?'
+_close='\}/'
+hits=$(cd "$repo" && git ls-files -z | xargs -0 grep -nE "$_open$_name$_def$_cwd$_close" 2>/dev/null) || :
+[ -z "$hits" ] || fail "$t" "$(printf 'a path is composed from a possibly-unset variable:\n%s' "$hits")"
+pass "$t"
+
 printf '\nall tests passed\n'

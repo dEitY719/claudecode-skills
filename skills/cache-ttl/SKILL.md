@@ -35,9 +35,11 @@ follow it, then stop.
 
 ## Step 2: Run the script
 
+Paste the locator block from `references/run-script.md` (the only place this skill spells the path), then:
+
 ```
-sh "${CLAUDE_PLUGIN_ROOT:-.}/skills/cache-ttl/scripts/set-cache-ttl.sh" 1h
-sh "${CLAUDE_PLUGIN_ROOT:-.}/skills/cache-ttl/scripts/set-cache-ttl.sh" 5m
+sh "$_CC" 1h
+sh "$_CC" 5m
 ```
 
 | Option | Description | Default |

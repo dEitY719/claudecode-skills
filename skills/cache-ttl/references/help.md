@@ -1,9 +1,9 @@
 # cache-ttl — help
 
-Run
+Paste the locator block from `references/run-script.md`, then run
 
 ```
-sh "${CLAUDE_PLUGIN_ROOT:-.}/skills/cache-ttl/scripts/set-cache-ttl.sh" --help
+sh "$_CC" --help
 ```
 
 and print its output verbatim, then stop.
