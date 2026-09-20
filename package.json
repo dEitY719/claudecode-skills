@@ -1,6 +1,6 @@
 {
   "name": "claudecode-skills",
-  "version": "0.1.0",
+  "version": "0.1.1",
   "description": "Skills that configure Claude Code itself — prompt-cache TTL and the bundled status line",
   "type": "module",
   "main": ".opencode/plugins/claudecode.js",

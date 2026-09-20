@@ -1,6 +1,6 @@
 {
   "name": "claudecode",
-  "version": "0.1.0",
+  "version": "0.1.1",
   "description": "Configure Claude Code itself: flip the prompt-cache TTL between 5 minutes and 1 hour, and install the bundled status line.",
   "author": {
     "name": "dEitY719",
